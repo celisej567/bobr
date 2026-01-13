@@ -12,7 +12,7 @@ int main()
  
     SDL_Init(SDL_INIT_VIDEO);
 
-    SDL_Window* wnd = SDL_CreateWindow("launch", 800, 600, SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL);
+    SDL_Window* wnd = SDL_CreateWindow("launch", WND_WIDTH, WND_HEIGHT, SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL);
     SDL_Renderer* ren = SDL_CreateRenderer(wnd, NULL);
 
     SDL_GLContext sdl_gl = SDL_GL_CreateContext(wnd);
@@ -28,6 +28,7 @@ int main()
     SDL_Event event;
 
     bool quit = false;
+    
     while(!quit)
     {
         while(SDL_PollEvent(&event))
@@ -42,13 +43,16 @@ int main()
 
         SDL_RenderClear(ren);
 
+        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT);
+
         SDL_RenderPresent(ren);
 
     }
     
     if(!SDL_GL_DestroyContext(sdl_gl))
     {
-        std::cout << "Failed to destroy context: \n" <<  SDL_GetError() << std::endl;
+        std::cout << "Failed to destroy context. SDL says: \n" <<  SDL_GetError() << std::endl;
         return -1;
     }
 
