@@ -9,9 +9,6 @@ set(INCLUDE_DIRS
 )
 
 
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/_BUILD)
-
-
 find_package(SDL3 REQUIRED)
 find_package(OpenGL REQUIRED)
 
