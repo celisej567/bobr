@@ -1,0 +1,51 @@
+#pragma once
+#include "FileSystemStuff.h"
+#include "glad/glad.h"
+#include "GL/gl.h"
+#include "string"
+
+class CShader
+{
+public:
+    // the program ID
+    unsigned int ID;
+    unsigned int vertShaderID;
+    unsigned int fragShaderID;
+  
+    // constructor reads and builds the shader
+    CShader(const char* vertexPath, const char* fragmentPath);
+
+    // use/activate the shader
+    void Use() 
+    { 
+        glUseProgram(ID);
+    } 
+    
+    // utility uniform functions
+    void SetUniformBool(const std::string &name, bool value) const
+    {         
+        glUniform1i(glGetUniformLocation(ID, name.c_str()), (int)value); 
+    }
+
+    void SetUniformInt(const std::string &name, int value) const
+    { 
+        glUniform1i(glGetUniformLocation(ID, name.c_str()), value); 
+    }
+
+    void SetUniformFloat(const std::string &name, float value) const
+    { 
+        glUniform1f(glGetUniformLocation(ID, name.c_str()), value); 
+    }
+
+    void SetUniformVec3(const std::string &name, float value1, float value2, float value3) const
+    { 
+        glUniform3f(glGetUniformLocation(ID, name.c_str()), value1, value2, value3); 
+    }
+
+    void SetUniformVec4(const std::string &name, float value1, float value2, float value3, float value4) const
+    { 
+        glUniform4f(glGetUniformLocation(ID, name.c_str()), value1, value2, value3, value4); 
+    }
+};
+
+unsigned int CompileShader(const char* buff, GLenum type);
