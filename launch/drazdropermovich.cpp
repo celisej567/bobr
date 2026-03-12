@@ -205,10 +205,10 @@ int main()
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
 		float cameraSpeed = 10.f * deltaTime;
+		glm::vec3 cameraRight = glm::normalize(glm::cross(cameraFront, cameraUp));
         
         while(SDL_PollEvent(&event))
         {
-			glm::vec3 cameraRight = glm::normalize(glm::cross(cameraFront, cameraUp));
 			switch(event.type)
 			{
 
@@ -216,7 +216,7 @@ int main()
 				{
 					switch(event.key.scancode)
 					{
-						
+						/*
 						case SDL_SCANCODE_W:
 						{
 							cameraPos += cameraSpeed * cameraFront;
@@ -236,7 +236,7 @@ int main()
 						{
 							cameraPos += cameraSpeed * cameraRight;
 							break;
-						}
+						}*/
 						case SDL_SCANCODE_ESCAPE:
 						{
 							SDL_SetWindowRelativeMouseMode(wnd, !SDL_GetWindowRelativeMouseMode(wnd));
@@ -245,12 +245,13 @@ int main()
 						}
 					}
 					
-
 					break;
 				}
 				case SDL_EVENT_MOUSE_MOTION:
 				{
-
+					if(!SDL_GetWindowRelativeMouseMode(wnd))
+						break;
+						
 					float xoffset = event.motion.xrel;
 					xoffset *= sensitivity;
 					float yoffset = -event.motion.yrel;
@@ -281,6 +282,25 @@ int main()
 
 			}
         }
+
+		const bool *key_states = SDL_GetKeyboardState(NULL);
+
+		if (key_states[SDL_SCANCODE_W]) 
+		{
+        	cameraPos += cameraSpeed * cameraFront;
+    	}
+		if (key_states[SDL_SCANCODE_A]) 
+		{
+        	cameraPos -= cameraSpeed * cameraRight;
+    	} 
+		if (key_states[SDL_SCANCODE_S]) 
+		{
+        	cameraPos -= cameraSpeed * cameraFront;
+    	} 
+		if (key_states[SDL_SCANCODE_D]) 
+		{
+        	cameraPos += cameraSpeed * cameraRight;
+    	}
 
         glViewport(0,0,WND_WIDTH,WND_HEIGHT);
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
