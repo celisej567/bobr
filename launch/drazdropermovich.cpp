@@ -106,6 +106,31 @@ glm::vec3 cubePositions[] = {
     glm::vec3(-1.3f,  1.0f, -1.5f)  
 };
 
+glm::mat4 lookAt(glm::vec3 cam_pos, glm::vec3 target, glm::vec3 world_up)
+{
+    glm::vec3 z_axis = glm::normalize(cam_pos - target);
+    glm::vec3 x_axis = glm::normalize(glm::cross(world_up, z_axis));
+    glm::vec3 y_axis = glm::cross(z_axis, x_axis);
+    glm::mat4 view = glm::mat4(1.0f);
+
+    view[0][0] = x_axis.x;
+    view[0][1] = y_axis.x;
+    view[0][2] = z_axis.x;
+
+    view[1][0] = x_axis.y;
+    view[1][1] = y_axis.y;
+    view[1][2] = z_axis.y;
+
+    view[2][0] = x_axis.z;
+    view[2][1] = y_axis.z;
+    view[2][2] = z_axis.z;
+
+    view[3][0] = -glm::dot(x_axis, cam_pos);
+    view[3][1] = -glm::dot(y_axis, cam_pos);
+    view[3][2] = -glm::dot(z_axis, cam_pos);
+
+    return view;
+}
 
 int main()
 {
@@ -191,6 +216,7 @@ int main()
 	glm::vec3 cameraPos   = glm::vec3(0.0f, 0.0f,  3.0f);
 	glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 	glm::vec3 cameraUp    = glm::vec3(0.0f, 1.0f,  0.0f);
+	glm::vec3 worldUp    = glm::vec3(0.0f, 1.0f,  0.0f);
 	const float sensitivity = 0.1f;
 	float yaw   = -90.0f;
 	float pitch =  0.0f;
@@ -251,7 +277,7 @@ int main()
 				{
 					if(!SDL_GetWindowRelativeMouseMode(wnd))
 						break;
-						
+
 					float xoffset = event.motion.xrel;
 					xoffset *= sensitivity;
 					float yoffset = -event.motion.yrel;
@@ -311,7 +337,9 @@ int main()
 		float camZ = cos(time) * radius;
 		glm::mat4 view = glm::mat4(1);
 		//view = glm::lookAt(glm::vec3(camX, 0.0, camZ), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f)); 
-		view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+		//view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+
+		view = lookAt(cameraPos, cameraPos + cameraFront, worldUp);
 
         shader1.Use();
         shader1.SetUniformVec4("OffsetShit", 0,0,0,1);
