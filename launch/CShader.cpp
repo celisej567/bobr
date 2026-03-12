@@ -54,3 +54,9 @@ CShader::CShader(const char* fragmentPath, const char* vertexPath)
 
 
 }
+
+CShader::~CShader()
+{
+    //glDeleteShader(vertShaderID);
+    //glDeleteShader(fragShaderID);
+}

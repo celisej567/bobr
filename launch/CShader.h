@@ -1,7 +1,7 @@
 #pragma once
 #include "FileSystemStuff.h"
 #include "glad/glad.h"
-#include "GL/gl.h"
+//#include "GL/gl.h"
 #include "string"
 
 class CShader
@@ -14,6 +14,7 @@ public:
   
     // constructor reads and builds the shader
     CShader(const char* vertexPath, const char* fragmentPath);
+    ~CShader();
 
     // use/activate the shader
     void Use() 
@@ -45,6 +46,11 @@ public:
     void SetUniformVec4(const std::string &name, float value1, float value2, float value3, float value4) const
     { 
         glUniform4f(glGetUniformLocation(ID, name.c_str()), value1, value2, value3, value4); 
+    }
+
+    void SetUniformMat4(const std::string &name, GLfloat* value, GLsizei count = 1, GLboolean transpose = GL_FALSE )
+    {
+        glUniformMatrix4fv(glGetUniformLocation(ID, name.c_str()), count, transpose, value);
     }
 };
 
