@@ -220,6 +220,7 @@ int main()
 	const float sensitivity = 0.1f;
 	float yaw   = -90.0f;
 	float pitch =  0.0f;
+	float fov = 45;
 
     SDL_Event event;
     bool quit = false;
@@ -300,6 +301,18 @@ int main()
     				cameraFront = glm::normalize(direction);
 					break;
 				}
+				case SDL_EVENT_MOUSE_WHEEL:
+				{
+					fov += event.wheel.y;
+
+					if(fov > 179)
+						fov = 179;
+
+					if(fov < 1)
+						fov = 1;
+
+					break;
+				}
 				case SDL_EVENT_QUIT:
 				{
             		quit = true;
@@ -367,7 +380,7 @@ int main()
 
     		//view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
 
-    		glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)WND_WIDTH / (float)WND_HEIGHT, 0.1f, 100.0f);	
+    		glm::mat4 projection = glm::perspective(glm::radians(fov), (float)WND_WIDTH / (float)WND_HEIGHT, 0.1f, 100.0f);	
 
     		GLfloat* model_p = glm::value_ptr(model);
     		GLfloat* view_p = glm::value_ptr(view);
