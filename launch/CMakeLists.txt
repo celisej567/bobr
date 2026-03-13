@@ -4,6 +4,7 @@ set(SOURCES
     FileSystemStuff.cpp
     CShader.cpp
     CTexture.cpp
+    CCamera.cpp
     ${PROJECT_SOURCE_DIR}/thirdparty/glad/src/glad.c
 )
 
@@ -26,4 +27,4 @@ target_link_libraries(launch PRIVATE SDL3::SDL3)
 #target_link_libraries(launch PRIVATE OpenGL::GL)
 
 target_sources(launch PRIVATE ${SOURCES})
-target_include_directories(launch PRIVATE ${INCLUDE_DIRS})
+target_include_directories(launch BEFORE PRIVATE ${INCLUDE_DIRS})

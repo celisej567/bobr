@@ -19,6 +19,7 @@
 #include "CShader.h"
 #include "FileSystemStuff.h"
 #include "CTexture.h"
+#include "CCamera.h"
 
 
 #define WND_WIDTH 800
@@ -106,31 +107,7 @@ glm::vec3 cubePositions[] = {
     glm::vec3(-1.3f,  1.0f, -1.5f)  
 };
 
-glm::mat4 lookAt(glm::vec3 cam_pos, glm::vec3 target, glm::vec3 world_up)
-{
-    glm::vec3 z_axis = glm::normalize(cam_pos - target);
-    glm::vec3 x_axis = glm::normalize(glm::cross(world_up, z_axis));
-    glm::vec3 y_axis = glm::cross(z_axis, x_axis);
-    glm::mat4 view = glm::mat4(1.0f);
-
-    view[0][0] = x_axis.x;
-    view[0][1] = y_axis.x;
-    view[0][2] = z_axis.x;
-
-    view[1][0] = x_axis.y;
-    view[1][1] = y_axis.y;
-    view[1][2] = z_axis.y;
-
-    view[2][0] = x_axis.z;
-    view[2][1] = y_axis.z;
-    view[2][2] = z_axis.z;
-
-    view[3][0] = -glm::dot(x_axis, cam_pos);
-    view[3][1] = -glm::dot(y_axis, cam_pos);
-    view[3][2] = -glm::dot(z_axis, cam_pos);
-
-    return view;
-}
+CCamera* g_pActiveCamera = NULL;
 
 int main()
 {
@@ -164,7 +141,7 @@ int main()
     glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &nrAttributes);
     std::cout << "Maximum nr of vertex attributes supported: " << nrAttributes << std::endl;
 
-    stbi_set_flip_vertically_on_load(true);	
+    stbi_set_flip_vertically_on_load(true);
 
     CTexture texture1("textures/container.jpg", GL_RGB);
     CTexture texture2("textures/awesomeface.png", GL_RGBA);
@@ -176,7 +153,7 @@ int main()
 //     //////////////////////////////////////////////
 
     unsigned int VBO, VAO, EBO;
-    glGenVertexArrays(1, &VAO);  
+    glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
 //     //glGenBuffers(1, &EBO);
 
@@ -213,14 +190,17 @@ int main()
 	//glm::vec3 cameraRight = glm::normalize(glm::cross(up, cameraDirection));
 //
 	//glm::vec3 cameraUp = glm::cross(cameraDirection, cameraRight);
-	glm::vec3 cameraPos   = glm::vec3(0.0f, 0.0f,  3.0f);
-	glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
-	glm::vec3 cameraUp    = glm::vec3(0.0f, 1.0f,  0.0f);
-	glm::vec3 worldUp    = glm::vec3(0.0f, 1.0f,  0.0f);
-	const float sensitivity = 0.1f;
-	float yaw   = -90.0f;
-	float pitch =  0.0f;
-	float fov = 45;
+	//glm::vec3 cameraPos   = glm::vec3(0.0f, 0.0f,  3.0f);
+	//glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
+	//glm::vec3 cameraUp    = glm::vec3(0.0f, 1.0f,  0.0f);
+	//glm::vec3 worldUp    = glm::vec3(0.0f, 1.0f,  0.0f);
+	//const float sensitivity = 0.1f;
+	//float yaw   = -90.0f;
+	//float pitch =  0.0f;
+	//float fov = 45;
+
+	CCamera mainCamera = CCamera();
+	g_pActiveCamera = &mainCamera;
 
     SDL_Event event;
     bool quit = false;
@@ -231,8 +211,8 @@ int main()
 		float currentFrame = time;
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
-		float cameraSpeed = 10.f * deltaTime;
-		glm::vec3 cameraRight = glm::normalize(glm::cross(cameraFront, cameraUp));
+		//float cameraSpeed = 10.f * deltaTime;
+		//glm::vec3 cameraRight = glm::normalize(glm::cross(cameraFront, cameraUp));
         
         while(SDL_PollEvent(&event))
         {
@@ -243,27 +223,6 @@ int main()
 				{
 					switch(event.key.scancode)
 					{
-						/*
-						case SDL_SCANCODE_W:
-						{
-							cameraPos += cameraSpeed * cameraFront;
-							break;
-						}
-						case SDL_SCANCODE_A:
-						{
-							cameraPos -= cameraSpeed * cameraRight;
-							break;
-						}
-						case SDL_SCANCODE_S:
-						{
-							cameraPos -= cameraSpeed * cameraFront;
-							break;
-						}
-						case SDL_SCANCODE_D:
-						{
-							cameraPos += cameraSpeed * cameraRight;
-							break;
-						}*/
 						case SDL_SCANCODE_ESCAPE:
 						{
 							SDL_SetWindowRelativeMouseMode(wnd, !SDL_GetWindowRelativeMouseMode(wnd));
@@ -274,43 +233,17 @@ int main()
 					
 					break;
 				}
+				case SDL_EVENT_MOUSE_WHEEL:
 				case SDL_EVENT_MOUSE_MOTION:
 				{
-					if(!SDL_GetWindowRelativeMouseMode(wnd))
-						break;
-
-					float xoffset = event.motion.xrel;
-					xoffset *= sensitivity;
-					float yoffset = -event.motion.yrel;
-					yoffset *= sensitivity;
-
 					
-    				yaw   += xoffset;
-    				pitch += yoffset;
-
-
-    				if(pitch > 89.0f)
-    				    pitch = 89.0f;
-    				if(pitch < -89.0f)
-    				    pitch = -89.0f;
-								
-    				glm::vec3 direction;
-    				direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
-    				direction.y = sin(glm::radians(pitch));
-    				direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
-    				cameraFront = glm::normalize(direction);
-					break;
-				}
-				case SDL_EVENT_MOUSE_WHEEL:
-				{
-					fov += event.wheel.y;
-
-					if(fov > 179)
-						fov = 179;
-
-					if(fov < 1)
-						fov = 1;
-
+					if(g_pActiveCamera)
+					{
+						if(!SDL_GetWindowRelativeMouseMode(wnd))
+	            			break;
+						g_pActiveCamera->ProcessSDLMouseInput(event, deltaTime);
+					}
+					
 					break;
 				}
 				case SDL_EVENT_QUIT:
@@ -324,22 +257,8 @@ int main()
 
 		const bool *key_states = SDL_GetKeyboardState(NULL);
 
-		if (key_states[SDL_SCANCODE_W]) 
-		{
-        	cameraPos += cameraSpeed * cameraFront;
-    	}
-		if (key_states[SDL_SCANCODE_A]) 
-		{
-        	cameraPos -= cameraSpeed * cameraRight;
-    	} 
-		if (key_states[SDL_SCANCODE_S]) 
-		{
-        	cameraPos -= cameraSpeed * cameraFront;
-    	} 
-		if (key_states[SDL_SCANCODE_D]) 
-		{
-        	cameraPos += cameraSpeed * cameraRight;
-    	}
+		if(g_pActiveCamera)
+			g_pActiveCamera->ProcessSDLKeyInput(key_states, deltaTime);
 
         glViewport(0,0,WND_WIDTH,WND_HEIGHT);
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
@@ -352,7 +271,8 @@ int main()
 		//view = glm::lookAt(glm::vec3(camX, 0.0, camZ), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f)); 
 		//view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
 
-		view = lookAt(cameraPos, cameraPos + cameraFront, worldUp);
+		if(g_pActiveCamera)
+			view = g_pActiveCamera->GetViewMatrix();
 
         shader1.Use();
         shader1.SetUniformVec4("OffsetShit", 0,0,0,1);
@@ -379,6 +299,10 @@ int main()
 				model = glm::rotate(model, time * glm::radians(50.0f), glm::vec3(0.5f, 1.0f, 0.5f));
 
     		//view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
+
+			float fov = 45;
+			if(g_pActiveCamera)
+				fov = g_pActiveCamera->GetFov();
 
     		glm::mat4 projection = glm::perspective(glm::radians(fov), (float)WND_WIDTH / (float)WND_HEIGHT, 0.1f, 100.0f);	
 
