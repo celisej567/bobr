@@ -8,9 +8,13 @@ uniform vec3 OffsetShit;
 out vec4 vertexColor;
 out vec2 TexCoord;
 
+uniform mat4 model;
+uniform mat4 view;
+uniform mat4 proj;
+
 void main()
 {
-    gl_Position = vec4(aPos.x + OffsetShit.x, aPos.y + OffsetShit.y, aPos.z + OffsetShit.z, 1.0);
+    gl_Position =  proj * view * model * vec4(aPos + OffsetShit, 1.0);
     vertexColor = aColor;
     TexCoord = aTexCoord;
 }

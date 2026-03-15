@@ -30,7 +30,7 @@ CShader::CShader(const char* fragmentPath, const char* vertexPath)
     std::string fragmentShader = GetFileString(fragmentPath);
     
     if( vertexShader.empty() || fragmentShader.empty() )
-        std::exit(-1);
+        std::abort();
 
     vertShaderID = CompileShader(vertexShader.c_str(), GL_VERTEX_SHADER);
     fragShaderID = CompileShader(fragmentShader.c_str(), GL_FRAGMENT_SHADER);

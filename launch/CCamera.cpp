@@ -32,6 +32,23 @@ CCamera::CCamera( glm::vec3 position, glm::vec3 angle, glm::vec3 forward, glm::v
 }
 */
 
+/*
+ // use only if UpdateCameraWorldAngles has already been called
+void CCamera::UpdateCameraLocalAngles()
+{
+    glm::vec3 front;
+    front.x = cos(glm::radians(m_Angles[1])) * cos(glm::radians(m_Angles[1]));
+    front.y = sin(glm::radians(m_Angles[0]));
+
+    //front.z = sin(glm::radians(m_Angles[2]));
+    front.z = sin(glm::radians(m_Angles[1])) * cos(glm::radians(m_Angles[0]));
+    m_Forward = glm::normalize(front);
+    
+    m_Right = glm::normalize(glm::cross(m_Forward, m_Up));
+    m_Up    = glm::normalize(glm::cross(m_Right, m_Forward));
+}
+*/
+
 void CCamera::UpdateCameraWorldAngles()
 {
     glm::vec3 front;
@@ -42,7 +59,7 @@ void CCamera::UpdateCameraWorldAngles()
     front.z = sin(glm::radians(m_Angles[1])) * cos(glm::radians(m_Angles[0]));
     m_Forward = glm::normalize(front);
     
-    m_Right = glm::normalize(glm::cross(m_Forward, g_WorldUp));  // normalize the vectors, because their length gets closer to 0 the more you look up or down which results in slower movement.
+    m_Right = glm::normalize(glm::cross(m_Forward, g_WorldUp));
     m_Up    = glm::normalize(glm::cross(m_Right, m_Forward));
 }
 
@@ -78,7 +95,6 @@ void CCamera::ProcessSDLKeyInput( const bool* key_states, float deltaTime )
     {
         m_Position -= (flMoveSpeed * deltaTime) * m_Up;
     }
-
     //UpdateCameraAngles();
 }
 
@@ -103,26 +119,7 @@ void CCamera::ProcessSDLMouseInput(SDL_Event& event, float deltaTime)
             if(m_Angles[0] < -89.0f)
                 m_Angles[0] = -89.0f;
 
-
-            /*
-			float xoffset = event.motion.xrel;
-			xoffset *= sensitivity;
-			float yoffset = -event.motion.yrel;
-			yoffset *= sensitivity;
-
-					
-    		yaw   += xoffset;
-    		pitch += yoffset;
-
-
-    		if(pitch > 89.0f)
-    		    pitch = 89.0f;
-    		if(pitch < -89.0f)
-    		    pitch = -89.0f;
-                */
-			
-            //UpdateCameraAngles();
-
+                
     		glm::vec3 direction;
     		direction.x = cos(glm::radians(m_Angles[1])) * cos(glm::radians(m_Angles[0]));
     		direction.y = sin(glm::radians(m_Angles[0]));

@@ -8,7 +8,7 @@ std::string GetFileString(const char* str)
     if (!inFile.is_open())
     {
         std::cout << "Error opening file \"" << str << "\"." << std::endl;
-        return NULL;
+        return {};
     }
 
     //inFile.seekg(0);

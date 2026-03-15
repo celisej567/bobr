@@ -41,6 +41,9 @@ private:
 
     void UpdateCameraWorldAngles();
 
+    // use only if UpdateCameraWorldAngles has already been called
+    //void UpdateCameraLocalAngles();
+
     glm::vec3 m_Position;
     glm::vec3 m_Angles;
     glm::vec3 m_Forward;

@@ -6,44 +6,10 @@
 //#include "GL/gl.h"
 
 
-
-
-#include <ctype.h>
-
-char *stristr(const char *String, const char *Pattern)
-{
-      char *pptr, *sptr, *start;
-
-      for (start = (char *)String; *start; start++)
-      {
-            /* find start of pattern in string */
-            for ( ; (*start && (toupper(*start) != toupper(*Pattern))); start++)
-                  ;
-            if (!*start)
-                  return 0;
-
-            pptr = (char *)Pattern;
-            sptr = (char *)start;
-
-            while (toupper(*sptr) == toupper(*pptr))
-            {
-                  sptr++;
-                  pptr++;
-
-                  /* if end of pattern then pattern was found */
-
-                  if (!*pptr)
-                        return (start);
-            }
-      }
-      return 0;
-}
-
-
 CTexture::CTexture(const char* filename, GLenum textureType)
 {
     if(!filename || !filename[0])
-        std::exit(-1);
+        std::abort();
 
     int nrChannels;
     unsigned char *textureData = stbi_load(filename, &width, &height, &nrChannels, 0);
