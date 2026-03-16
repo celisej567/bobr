@@ -9,11 +9,14 @@ public:
     int width, height;
 
     CTexture(const char* filename, GLenum textureType);
-    ~CTexture();
+    virtual ~CTexture();
 
     operator unsigned int() const
     {
         return ID;
     }
+
+private:
+    bool m_bValid = false;
 
 };

@@ -2,6 +2,10 @@
 #include "glm.hpp"
 #include "SDL3/SDL.h"
 
+#include "shared.h"
+
+//ICamera* g_pActiveCamera = NULL;
+
 CCamera::CCamera()
 {
     m_Position = glm::vec3( 0, 0, 0 );

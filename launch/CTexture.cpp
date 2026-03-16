@@ -5,6 +5,8 @@
 #include "glad/glad.h"
 //#include "GL/gl.h"
 
+#include "shared.h"
+
 
 CTexture::CTexture(const char* filename, GLenum textureType)
 {
@@ -26,6 +28,7 @@ CTexture::CTexture(const char* filename, GLenum textureType)
     {
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, textureType, GL_UNSIGNED_BYTE, textureData);
         glGenerateMipmap(GL_TEXTURE_2D);
+        m_bValid = true;
     }
     else
     {
@@ -37,5 +40,6 @@ CTexture::CTexture(const char* filename, GLenum textureType)
 
 CTexture::~CTexture()
 {
-    glDeleteTextures(1, &ID);
+    if(m_bValid && wnd)
+        glDeleteTextures(1, &ID);
 }

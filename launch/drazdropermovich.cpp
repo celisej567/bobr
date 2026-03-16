@@ -4,6 +4,8 @@
 #include "glad/glad.h"
 // #include "GL/gl.h"
 
+#include "shared.h"
+
 #include "vector"
 
 #include "glm.hpp"
@@ -119,7 +121,7 @@ glm::vec3 cubePositions[] = {
     glm::vec3(-1.3f,  1.0f, -1.5f)
 };
 
-CCamera* g_pActiveCamera = NULL;
+//SDL_Window* wnd = NULL;
 
 int main()
 {
@@ -127,7 +129,7 @@ int main()
     
     SDL_Init(SDL_INIT_VIDEO);
     
-    SDL_Window* wnd = SDL_CreateWindow("launch", WND_WIDTH, WND_HEIGHT, SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL);
+    wnd = SDL_CreateWindow("launch", WND_WIDTH, WND_HEIGHT, SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL);
     //SDL_Renderer* ren = SDL_CreateRenderer(wnd, NULL);
 
 	SDL_SetWindowRelativeMouseMode(wnd, true);
@@ -415,6 +417,7 @@ int main()
 
 //     //SDL_DestroyRenderer(ren);
     SDL_DestroyWindow(wnd);
+    wnd = NULL;
 
     puts("bebra2\n");
     
