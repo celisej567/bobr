@@ -6,6 +6,8 @@ set(SOURCES
     CTexture.cpp
     CCamera.cpp
     CModel.cpp
+    CEntity.cpp
+    ECS.cpp
     ${PROJECT_SOURCE_DIR}/thirdparty/glad/src/glad.c
 )
 

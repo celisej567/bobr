@@ -244,6 +244,10 @@ int main()
 
     //CModel ObjModel(vertices_EBO, 4, indices_EBO, 6);
     CModel ObjModel("models/box.obj");
+
+    CEntity* ent = (CEntity*)CreateEntity("base_entity");
+    SpawnEntity(ent);
+
     //glm::mat4 projection = glm::perspective(glm::radians(fov), (float)WND_WIDTH / (float)WND_HEIGHT, 0.1f, 100.0f);	
 
     SDL_Event event;
@@ -252,6 +256,7 @@ int main()
     {
 		float time = SDL_GetTicks() / 1000.0f;
 
+        curtime = time;
 		float currentFrame = time;
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
@@ -302,6 +307,8 @@ int main()
 
 			}
         }
+
+        ProcessEntities();
 
 		const bool *key_states = SDL_GetKeyboardState(NULL);
 
