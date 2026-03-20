@@ -4,6 +4,7 @@
 //#include "GL/gl.h"
 #include "string"
 #include "unordered_map"
+#include "mytypes.h"
 
 class CShader
 {

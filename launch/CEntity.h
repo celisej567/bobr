@@ -1,5 +1,5 @@
 #pragma once
-
+#include "mytypes.h"
 #include "ECS.h"
 
 class CEntity : public IEntity

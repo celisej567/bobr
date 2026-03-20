@@ -6,6 +6,7 @@
 #include "cstring"
 #include "string"
 #include "vector"
+#include "mytypes.h"
 
 std::string GetFileString(std::string str);
 

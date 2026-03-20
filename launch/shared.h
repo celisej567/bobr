@@ -3,6 +3,7 @@
 #include "ICamera.h"
 #include "glm.hpp"
 #include "CEntity.h"
+#include "mytypes.h"
 
 const glm::vec3 g_WorldUp = glm::vec3(0,1,0);
 

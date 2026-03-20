@@ -3,6 +3,7 @@
 #include "CEntity.h"
 #include "CTexture.h"
 #include "CModel.h"
+#include "mytypes.h"
 
 class CModelEntity : public CEntity
 {

@@ -1,4 +1,5 @@
 #pragma once
+#include "mytypes.h"
 #include "CEntity.h"
 
 class CGizmos : public CEntity

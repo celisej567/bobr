@@ -5,6 +5,7 @@
 #include "gtc/matrix_transform.hpp"
 #include "gtc/type_ptr.hpp"
 #include "ICamera.h"
+#include "mytypes.h"
 
 class CCamera : public ICamera
 {
