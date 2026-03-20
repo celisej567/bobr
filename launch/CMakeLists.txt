@@ -26,8 +26,10 @@ set(CMAKE_CXX_STANDARD 23)
 find_package(SDL3 REQUIRED)
 #find_package(OpenGL REQUIRED)
 
-#add_compile_options("-fsanitize=address")
-#add_link_options("-lasan")
+if(LINUX)
+    add_compile_options("-fsanitize=address")
+    add_link_options("-lasan")
+endif()
 add_executable(launch)
 
 
