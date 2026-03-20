@@ -3,6 +3,7 @@
 #include "glad/glad.h"
 //#include "GL/gl.h"
 #include "string"
+#include "unordered_map"
 
 class CShader
 {
@@ -13,7 +14,7 @@ public:
     unsigned int fragShaderID;
   
     // constructor reads and builds the shader
-    CShader(const char* vertexPath, const char* fragmentPath);
+    CShader(std::string  vertexPath, std::string fragmentPath);
     virtual ~CShader();
 
     // use/activate the shader
@@ -54,4 +55,8 @@ public:
     }
 };
 
+void CompileAllShaders();
+
 unsigned int CompileShader(const char* buff, GLenum type);
+
+inline std::unordered_map<std::string, CShader*> g_ShaderIDMap;

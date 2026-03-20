@@ -9,7 +9,7 @@ void CEntity::Spawn()
 
 }
 
-void CEntity::TickThink()
+void CEntity::Tick()
 {
     if( m_flNextThink <= curtime )
         Think();
@@ -18,6 +18,10 @@ void CEntity::TickThink()
 
 void CEntity::Think()
 {
-    std::cout << "THINK!!!" << std::endl;
-    m_flNextThink = curtime + 0.5f;
+
+}
+
+void CEntity::Frame()
+{
+
 }

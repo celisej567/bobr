@@ -41,15 +41,21 @@ class CModel
 public:
     uint VBO, VAO, EBO;
 
+    CModel(){};
+
     // load model from file.
     CModel(std::string filename);
 
     // fill data with already existing arrays.
     CModel( vertex_t* verts, uint verts_size, uint* indexes, uint indexes_size );
 
+    void ProcessFile( std::string filename );
+    void ProcessData( vertex_t* verts, uint verts_size, uint* indexes, uint indexes_size );
+
+
     vertex_t* GetVerts() { return m_vecVerts.data(); };
     uint GetVertsCount() { return m_vecVerts.size(); };
-    uint* GetIndexes() { return m_vecIndexes.data(); };
+    uint* GetIndexes()   { return m_vecIndexes.data(); };
     uint GetIndexesCount() { return m_vecIndexes.size(); };
 
 private:

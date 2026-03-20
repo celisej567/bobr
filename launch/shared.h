@@ -15,3 +15,8 @@ inline float curtime = 0;
 inline ICamera* g_pActiveCamera;
 
 inline SDL_Window* wnd;
+
+inline glm::mat4 projection;
+inline glm::mat4 view = glm::mat4(1);
+
+#define BASECLASS(thisclass,baseclass)  typedef baseclass BaseClass; typedef thisclass ThisClass;

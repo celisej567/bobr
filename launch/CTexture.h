@@ -8,7 +8,9 @@ public:
     unsigned int ID;
     int width, height;
 
+    CTexture(){};
     CTexture(const char* filename, GLenum textureType);
+    void ProcessFile(const char* filename, GLenum textureType);
     virtual ~CTexture();
 
     operator unsigned int() const

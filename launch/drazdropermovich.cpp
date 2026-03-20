@@ -23,6 +23,7 @@
 #include "CTexture.h"
 #include "CCamera.h"
 #include "CModel.h"
+#include "CModelEntity.h"
 
 
 #define WND_WIDTH 800
@@ -160,6 +161,8 @@ int main()
     CTexture texture1("textures/container.jpg", GL_RGB);
     CTexture texture2("textures/awesomeface.png", GL_RGBA);
 
+    CompileAllShaders();
+
     CShader shader1("shaders/default.frag","shaders/default.vert");
     shader1.Use();
     shader1.SetUniformInt("texture2", 1);
@@ -248,6 +251,21 @@ int main()
     CEntity* ent = (CEntity*)CreateEntity("base_entity");
     SpawnEntity(ent);
 
+    CEntity* gizmos = (CEntity*)CreateEntity("gizmos");
+    SpawnEntity(gizmos);
+
+    CModelEntity* ent2 = (CModelEntity*)CreateEntity("model_entity");
+    ent2->SetAbsPos({0,10,0});
+    ent2->SetModelName("models/box.obj");
+    ent2->SetTextureName("textures/container.jpg", GL_RGB);
+    SpawnEntity(ent2);
+
+    CModelEntity* ent3 = (CModelEntity*)CreateEntity("rotating_model");
+    ent3->SetAbsPos({0,20,-10});
+    ent3->SetModelName("models/box.obj");
+    ent3->SetTextureName("textures/awesomeface.png", GL_RGBA);
+    SpawnEntity(ent3);
+
     //glm::mat4 projection = glm::perspective(glm::radians(fov), (float)WND_WIDTH / (float)WND_HEIGHT, 0.1f, 100.0f);	
 
     SDL_Event event;
@@ -308,7 +326,7 @@ int main()
 			}
         }
 
-        ProcessEntities();
+        ProcessEntitiesThink();
 
 		const bool *key_states = SDL_GetKeyboardState(NULL);
 
@@ -323,7 +341,7 @@ int main()
 		const float radius = 10.0f;
 		float camX = sin(time) * radius;
 		float camZ = cos(time) * radius;
-		glm::mat4 view = glm::mat4(1);
+		view = glm::mat4(1);
 		//view = glm::lookAt(glm::vec3(camX, 0.0, camZ), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f)); 
 		//view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
 
@@ -340,7 +358,9 @@ int main()
 		if(g_pActiveCamera)
 				fov = g_pActiveCamera->GetFov();
 
-        glm::mat4 projection = glm::perspective(glm::radians(fov), (float)WND_WIDTH / (float)WND_HEIGHT, 0.1f, 100.0f);	
+        projection = glm::perspective(glm::radians(fov), (float)WND_WIDTH / (float)WND_HEIGHT, 0.1f, 100.0f);
+
+        ProcessEntitiesFrame();
 
         /*
         glm::mat4 projection = glm::mat4(0);
@@ -352,7 +372,7 @@ int main()
             projection[3][2] = 0.01f;
         }
         */
-
+        /*
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, texture1);
         glActiveTexture(GL_TEXTURE1);
@@ -410,6 +430,8 @@ int main()
         shader1.SetUniformMat4("proj", projection_p);
 
         glDrawElements(GL_TRIANGLES, ObjModel.GetIndexesCount(), GL_UNSIGNED_INT, 0);
+
+        */
 
         SDL_GL_SwapWindow(wnd);
         glFinish();

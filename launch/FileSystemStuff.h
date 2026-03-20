@@ -5,5 +5,8 @@
 #include "sstream"
 #include "cstring"
 #include "string"
+#include "vector"
 
-std::string GetFileString(const char* str);
+std::string GetFileString(std::string str);
+
+std::vector<std::string> MySplitString(std::string buff);

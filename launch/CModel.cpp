@@ -21,7 +21,12 @@ unsigned int indices_EBO2[] = {  // note that we start from 0!
 
 objl::Loader* g_objLoader = NULL;
 
-CModel::CModel(std::string filename)
+CModel::CModel( std::string filename )
+{
+    ProcessFile(filename);
+}
+
+void CModel::ProcessFile( std::string filename )
 {
     if(!g_objLoader)
         g_objLoader = new objl::Loader();
@@ -105,12 +110,17 @@ CModel::CModel(std::string filename)
     GenerateBuffers();
 }
 
-CModel::CModel( vertex_t* verts, uint verts_size, uint* indexes, uint indexes_size )
+void CModel::ProcessData( vertex_t* verts, uint verts_size, uint* indexes, uint indexes_size )
 {
     m_vecVerts = std::vector<vertex_t>(verts, verts+(verts_size));
     m_vecIndexes = std::vector<uint>(indexes, indexes+(indexes_size));
 
     GenerateBuffers();
+}
+
+CModel::CModel( vertex_t* verts, uint verts_size, uint* indexes, uint indexes_size )
+{
+    ProcessData(verts, verts_size, indexes, indexes_size);
 }
 
 

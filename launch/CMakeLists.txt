@@ -8,6 +8,9 @@ set(SOURCES
     CModel.cpp
     CEntity.cpp
     ECS.cpp
+    CModelEntity.cpp
+    CRotatingModel.cpp
+    CGizmos.cpp
     ${PROJECT_SOURCE_DIR}/thirdparty/glad/src/glad.c
 )
 

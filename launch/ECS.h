@@ -5,6 +5,7 @@
 #include "map"
 #include "unordered_map"
 #include "functional"
+#include "glm.hpp"
 
 class IEntity;
 
@@ -14,7 +15,8 @@ class CEntityClassnameBuilder;
 inline IEntity* CreateEntity(std::string classname);
 inline void SpawnEntity(IEntity* pEntity);
 inline void DeleteEntity(IEntity* pEntity);
-void ProcessEntities();
+void ProcessEntitiesThink();
+void ProcessEntitiesFrame();
 
 inline std::map<uint, IEntity*> g_ExistingEntities;
 inline std::unordered_map< std::string, std::function<IEntity*()>> g_EntityClassnameMap;
@@ -25,25 +27,34 @@ class IEntity
 {
 public:
     virtual void Spawn() = 0;
-    virtual void TickThink() = 0;
+    virtual void Tick() = 0;
     virtual void Think() = 0;
 
-    virtual bool IsEnabled() { return m_bEnabled; };
-    virtual bool IsMarkedForDelete() { return m_bMarkForDelete; };
+    virtual void Frame() = 0;
 
-    virtual void Enable() {m_bEnabled=true;};
-    virtual void Disable() {m_bEnabled=false;};
+    virtual bool IsEnabled() = 0;
+    virtual bool IsMarkedForDelete() = 0;
 
-    virtual uint GetEntityIndex() {return m_uEntIndex;};
-    virtual std::string GetClassname() {return m_strClassname;};
+    virtual bool IsVisible() = 0;
+    virtual void SetVisible(bool bEnable) = 0;
+
+    virtual void Enable() = 0;
+    virtual void Disable() = 0;
+    virtual void MarkForDelete() = 0;
+
+    virtual glm::vec3 GetAbsPos() = 0;
+    virtual glm::vec3 GetAbsRot() = 0;
+
+    virtual void SetAbsPos(glm::vec3 vec) = 0;
+    virtual void SetAbsRot(glm::vec3 vec) = 0;
+
+    virtual uint GetEntityIndex() = 0;
+    virtual std::string GetClassname() = 0;
 
 protected:
 
-    uint m_uEntIndex = ENTITY_INVALID_INDEX;
-    std::string m_strClassname;
-
-    bool m_bEnabled = false;
-    bool m_bMarkForDelete = false;
+    virtual void SetEntityIndex(uint index) = 0;
+    virtual void SetClassname(std::string classname) = 0;
 
 public:
     friend IEntity* CreateEntity(std::string classname);
@@ -72,15 +83,16 @@ inline IEntity* CreateEntity(std::string classname)
 
     uint iLastEntIndex = ENTITY_INVALID_INDEX;
     if( !(g_ExistingEntities.empty()) )
-        uint iLastEntIndex = (std::prev(g_ExistingEntities.end()))->first;
+        iLastEntIndex = (std::prev(g_ExistingEntities.end()))->first;
 
     uint iEntIndex = 0;
     if(iLastEntIndex != ENTITY_INVALID_INDEX)
         iEntIndex = iLastEntIndex+1;
 
     IEntity* pEntity = g_EntityClassnameMap[classname]();
-    pEntity->m_strClassname = classname;
-    pEntity->m_uEntIndex = iEntIndex;
+    pEntity->SetClassname(classname);
+    pEntity->SetEntityIndex(iEntIndex);
+
     g_ExistingEntities[iEntIndex] = pEntity;
 
     return pEntity;
@@ -89,7 +101,7 @@ inline IEntity* CreateEntity(std::string classname)
 
 inline void SpawnEntity(IEntity* pEntity)
 {
-    if(pEntity->m_uEntIndex == ENTITY_INVALID_INDEX)
+    if(pEntity->GetEntityIndex() == ENTITY_INVALID_INDEX)
         std::abort();
 
     pEntity->Enable();
@@ -100,5 +112,6 @@ inline void SpawnEntity(IEntity* pEntity)
 inline void DeleteEntity(IEntity* pEntity)
 {
     pEntity->Disable();
-    pEntity->m_bMarkForDelete = true;
+    pEntity->SetVisible(false);
+    pEntity->MarkForDelete();
 }

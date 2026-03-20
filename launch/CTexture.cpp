@@ -10,6 +10,17 @@
 
 CTexture::CTexture(const char* filename, GLenum textureType)
 {
+    ProcessFile(filename,textureType);
+}
+
+CTexture::~CTexture()
+{
+    if(m_bValid && wnd)
+        glDeleteTextures(1, &ID);
+}
+
+ void CTexture::ProcessFile(const char* filename, GLenum textureType)
+ {
     if(!filename || !filename[0])
         std::abort();
 
@@ -36,10 +47,4 @@ CTexture::CTexture(const char* filename, GLenum textureType)
         std::exit(-1);
     }
     stbi_image_free(textureData);
-}
-
-CTexture::~CTexture()
-{
-    if(m_bValid && wnd)
-        glDeleteTextures(1, &ID);
-}
+ }
