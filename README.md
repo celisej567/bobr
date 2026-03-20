@@ -1,4 +1,4 @@
--Get SDL3 somewhere
+- Get SDL3 somewhere
 
 - cmake --build build/
 
