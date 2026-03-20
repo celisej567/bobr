@@ -19,8 +19,20 @@ inline void DeleteEntity(IEntity* pEntity);
 void ProcessEntitiesThink();
 void ProcessEntitiesFrame();
 
-inline std::map<uint, IEntity*> g_ExistingEntities;
-inline std::unordered_map< std::string, std::function<IEntity*()>> g_EntityClassnameMap;
+//inline std::map<uint, IEntity*> g_ExistingEntities;
+//inline std::unordered_map< std::string, std::function<IEntity*()>> g_EntityClassnameMap;
+
+inline std::map<uint, IEntity*>& ExistingEntities()
+{
+    static std::map<uint, IEntity*> g_ExistingEntities;;
+    return g_ExistingEntities;
+}
+
+inline std::unordered_map< std::string, std::function<IEntity*()>>& EntityClassnameMap()
+{
+    static std::unordered_map< std::string, std::function<IEntity*()>> g_EntityClassnameMap;
+    return g_EntityClassnameMap;
+}
 
 #define ENTITY_INVALID_INDEX 0xFFFFFFFF
 
@@ -70,7 +82,7 @@ public:
 
     CEntityClassnameBuilder(std::string classname)
     {
-        g_EntityClassnameMap[classname] = []() -> IEntity* { return new T(); };
+        EntityClassnameMap()[classname] = []() -> IEntity* { return new T(); };
     }
 };
 
@@ -79,22 +91,22 @@ public:
 
 inline IEntity* CreateEntity(std::string classname)
 {
-    if(!g_EntityClassnameMap.contains(classname))
+    if(!EntityClassnameMap().contains(classname))
         return NULL;
 
     uint iLastEntIndex = ENTITY_INVALID_INDEX;
-    if( !(g_ExistingEntities.empty()) )
-        iLastEntIndex = (std::prev(g_ExistingEntities.end()))->first;
+    if( !(ExistingEntities().empty()) )
+        iLastEntIndex = (std::prev(ExistingEntities().end()))->first;
 
     uint iEntIndex = 0;
     if(iLastEntIndex != ENTITY_INVALID_INDEX)
         iEntIndex = iLastEntIndex+1;
 
-    IEntity* pEntity = g_EntityClassnameMap[classname]();
+    IEntity* pEntity = EntityClassnameMap()[classname]();
     pEntity->SetClassname(classname);
     pEntity->SetEntityIndex(iEntIndex);
 
-    g_ExistingEntities[iEntIndex] = pEntity;
+    ExistingEntities()[iEntIndex] = pEntity;
 
     return pEntity;
 }

@@ -3,12 +3,12 @@
 
 void ProcessEntitiesThink()
 {
-    for( auto EntityPair : g_ExistingEntities )
+    for( auto EntityPair : ExistingEntities() )
     {
         IEntity* pEntity = EntityPair.second;
         if(pEntity->IsMarkedForDelete())
         {
-            g_ExistingEntities.erase(EntityPair.first);
+            ExistingEntities().erase(EntityPair.first);
             delete pEntity;
             continue;
         }
@@ -22,7 +22,7 @@ void ProcessEntitiesThink()
 
 void ProcessEntitiesFrame()
 {
-    for( auto EntityPair : g_ExistingEntities )
+    for( auto EntityPair : ExistingEntities() )
     {
         IEntity* pEntity = EntityPair.second;
         if( !(pEntity->IsVisible()) )
@@ -30,7 +30,7 @@ void ProcessEntitiesFrame()
         
         if(pEntity->IsMarkedForDelete())
         {
-            g_ExistingEntities.erase(EntityPair.first);
+            ExistingEntities().erase(EntityPair.first);
             delete pEntity;
             continue;
         }
