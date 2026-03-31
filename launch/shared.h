@@ -2,7 +2,7 @@
 #include "SDL3/SDL.h"
 #include "ICamera.h"
 #include "glm.hpp"
-#include "CEntity.h"
+#include "entity/CEntity.h"
 #include "mytypes.h"
 
 const glm::vec3 g_WorldUp = glm::vec3(0,1,0);

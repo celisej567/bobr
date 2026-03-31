@@ -6,15 +6,16 @@ set(SOURCES
     CTexture.cpp
     CCamera.cpp
     CModel.cpp
-    CEntity.cpp
-    ECS.cpp
-    CModelEntity.cpp
-    CRotatingModel.cpp
-    CGizmos.cpp
+    entity/CEntity.cpp
+    entity/ECS.cpp
+    entity/CModelEntity.cpp
+    entity/CRotatingModel.cpp
+    entity/CGizmos.cpp
     ${PROJECT_SOURCE_DIR}/thirdparty/glad/src/glad.c
 )
 
 set(INCLUDE_DIRS
+    .
     ${PROJECT_SOURCE_DIR}/thirdparty/glad/include
     ${PROJECT_SOURCE_DIR}/thirdparty/stb
     ${PROJECT_SOURCE_DIR}/thirdparty/glm

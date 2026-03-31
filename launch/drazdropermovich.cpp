@@ -23,7 +23,7 @@
 #include "CTexture.h"
 #include "CCamera.h"
 #include "CModel.h"
-#include "CModelEntity.h"
+#include "entity/CModelEntity.h"
 
 
 #define WND_WIDTH 800
@@ -296,6 +296,8 @@ int main()
 							//SDL_SetRelativeMouseMode(!SDL_GetRelativeMouseMode());
 							break;
 						}
+                        default:
+                        break;
 					}
 					
 					break;

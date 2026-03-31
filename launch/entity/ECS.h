@@ -39,6 +39,7 @@ inline std::unordered_map< std::string, std::function<IEntity*()>>& EntityClassn
 class IEntity
 {
 public:
+
     virtual void Spawn() = 0;
     virtual void Tick() = 0;
     virtual void Think() = 0;
