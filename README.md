@@ -4,7 +4,7 @@
 
 - cd build ; cmake .. ; cd ..
 
-- cmake --build build/
+- cmake --build build/ -j 8
 
 - copy everything from `resources` to `_BUILD`
 
