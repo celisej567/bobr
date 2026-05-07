@@ -8,7 +8,12 @@
 #include "glm.hpp"
 #include "mytypes.h"
 
+#include "iostream"
+
 class IEntity;
+
+typedef std::unordered_map< std::string, std::function<IEntity*()>> ClassnameMap_t;
+typedef std::map<uint, IEntity*> ExistingEntityMap_t;
 
 template <class T>
 class CEntityClassnameBuilder;
@@ -19,18 +24,21 @@ inline void DeleteEntity(IEntity* pEntity);
 void ProcessEntitiesThink();
 void ProcessEntitiesFrame();
 
-//inline std::map<uint, IEntity*> g_ExistingEntities;
-//inline std::unordered_map< std::string, std::function<IEntity*()>> g_EntityClassnameMap;
+// TODO (celisej): make some kind of InitializeEntitySystem() function or something
+//                 that will handle g_EntityClassnameMap creation,
+//                 classname-constructor link, etc... and call it seperatly in main()
 
-inline std::map<uint, IEntity*>& ExistingEntities()
+// gives you a map of existing entities. 
+// "Existing entites" includes created entities but not properly spawned yet. 
+inline ExistingEntityMap_t& ExistingEntities()
 {
-    static std::map<uint, IEntity*> g_ExistingEntities;;
+    static ExistingEntityMap_t g_ExistingEntities;
     return g_ExistingEntities;
 }
 
-inline std::unordered_map< std::string, std::function<IEntity*()>>& EntityClassnameMap()
+inline ClassnameMap_t& EntityClassnameMap()
 {
-    static std::unordered_map< std::string, std::function<IEntity*()>> g_EntityClassnameMap;
+    static ClassnameMap_t g_EntityClassnameMap;
     return g_EntityClassnameMap;
 }
 
@@ -83,6 +91,8 @@ public:
 
     CEntityClassnameBuilder(std::string classname)
     {
+        //TODO (celisej): rn its called mid initialization of the whole program. This is bad.
+        //                  Make it so it will call some dedicated function in main to do that.
         EntityClassnameMap()[classname] = []() -> IEntity* { return new T(); };
     }
 };
@@ -90,10 +100,20 @@ public:
 #define LINK_CLASSNAME_TO_ENTITY(mapClassName,DLLClassName) \
 	static CEntityClassnameBuilder<DLLClassName> mapClassName( #mapClassName )
 
+
+// Creates Entity based on classname but does not initiate Spawn().
+// If unknown classname is given returns NULL.
+//
+// TODO (celisej): Make it so entities can be created using costructor
+//                  and will be properly handled that way as well
+//                  without calling this function
 inline IEntity* CreateEntity(std::string classname)
 {
     if(!EntityClassnameMap().contains(classname))
+    {
+        std::cout << "Unable to spawn entity classname: " << classname << std::endl;
         return NULL;
+    }
 
     uint iLastEntIndex = ENTITY_INVALID_INDEX;
     if( !(ExistingEntities().empty()) )
@@ -112,10 +132,10 @@ inline IEntity* CreateEntity(std::string classname)
     return pEntity;
 }
 
-
+// Initiates propper Spawn() on already existing entity.
 inline void SpawnEntity(IEntity* pEntity)
 {
-    if(pEntity->GetEntityIndex() == ENTITY_INVALID_INDEX)
+    if(!pEntity || pEntity->GetEntityIndex() == ENTITY_INVALID_INDEX)
         std::abort();
 
     pEntity->Enable();
