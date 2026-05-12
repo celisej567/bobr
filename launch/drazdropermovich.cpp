@@ -25,6 +25,8 @@
 #include "CModel.h"
 #include "entity/CModelEntity.h"
 
+#include "cmd/cmd.h"
+
 
 #define WND_WIDTH 800
 #define WND_HEIGHT 600
@@ -124,9 +126,23 @@ glm::vec3 cubePositions[] = {
 
 //SDL_Window* wnd = NULL;
 
-int main()
+int main(int argc, char **argv)
 {
     puts("bebra\n");
+
+    CMD::ProcessArguments(argc, argv);
+
+    std::cout << CMD::GetExecutable() << std::endl;
+
+    if( CMD::FindArg("-aboba") )
+        std::cout << "DID Found -aboba" << std::endl;
+    else
+        std::cout << "DID NOT Found -aboba" << std::endl;
+
+    if( CMD::FindArg("-bebra") )
+        std::cout << "DID Found -bebra, value is " << CMD::GetArg("-bebra", "NONE") << std::endl;
+    else
+        std::cout << "DID NOT Found -bebra" << std::endl;
     
     SDL_Init(SDL_INIT_VIDEO);
     

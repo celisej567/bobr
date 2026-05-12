@@ -11,6 +11,7 @@ set(SOURCES
     entity/CModelEntity.cpp
     entity/CRotatingModel.cpp
     entity/CGizmos.cpp
+    cmd/cmd.cpp
     ${PROJECT_SOURCE_DIR}/thirdparty/glad/src/glad.c
 )
 
