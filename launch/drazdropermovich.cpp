@@ -27,6 +27,7 @@
 
 #include "cmd/cmd.h"
 
+#include "iomanip"
 
 #define WND_WIDTH 800
 #define WND_HEIGHT 600
@@ -143,7 +144,35 @@ int main(int argc, char **argv)
         std::cout << "DID Found -bebra, value is " << CMD::GetArg("-bebra", "NONE") << std::endl;
     else
         std::cout << "DID NOT Found -bebra" << std::endl;
-    
+
+    {
+    if( CMD::FindArg("-integer") )
+        std::cout << "DID Found -integer, value stored as int = " << CMD::GetArgInt("-integer") << std::endl;
+    else
+        std::cout << "DID NOT Found -integer" << std::endl;
+    }
+
+    {
+    if( CMD::FindArg("-bool") )
+        std::cout << "DID Found -bool, value stored as bool = " << CMD::GetArgBool("-bool") << std::endl;
+    else
+        std::cout << "DID NOT Found -bool" << std::endl;
+    }
+
+    {
+    if( CMD::FindArg("-float") )
+        std::cout << "DID Found -float, value stored as float = " << std::setprecision(9) << CMD::GetArgFloat("-float") << std::endl;
+    else
+        std::cout << "DID NOT Found -float" << std::endl;
+    }
+
+    {
+    if( CMD::FindArg("-double") )
+        std::cout << "DID Found -double, value stored as double = " << std::setprecision(17) << CMD::GetArgDouble("-double") << std::endl;
+    else
+        std::cout << "DID NOT Found -double" << std::endl;
+    }
+
     SDL_Init(SDL_INIT_VIDEO);
     
     wnd = SDL_CreateWindow("launch", WND_WIDTH, WND_HEIGHT, SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL);

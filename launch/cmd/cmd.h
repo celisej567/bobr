@@ -10,10 +10,27 @@ class CMD
 
 public:
     // Get an argument parameter as a string.
+    // Case sensitive.
     static const char* GetArg( const char* strArg, const char* strDefault = NULL );
 
+    // Get an argument parameter as an int.
+    // Case sensitive.
+    static bool GetArgBool( const char* strArg, bool bDefault = false);
+
+    // Get an argument parameter as an int.
+    // Case sensitive.
+    static int GetArgInt( const char* strArg, int iDefault = 0 );
+
+    // Get an argument parameter as an float.
+    // Case sensitive.
+    static float GetArgFloat( const char* strArg, float fDefault = 0 );
+
+    // Get an argument parameter as an double.
+    // Case sensitive.
+    static double GetArgDouble( const char* strArg, double dDefault = 0 );
+
     // Get ID of an argument if it exists. Otherwise return 0
-    // Case sensitive. Skips executable path.
+    // Case sensitive.
     static uint FindArg( const char* strArg );
 
     // Returns an executable path.

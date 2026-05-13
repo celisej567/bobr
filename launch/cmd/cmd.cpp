@@ -43,14 +43,59 @@ void CMD::ProcessArguments(int argc, char **argv)
 const char* CMD::GetArg(const char *strArg, const char *strDefault)
 {
     uint argID = FindArg(strArg);
-    if(!argID || argID+1 > m_ArgsCount)
+    if( !argID || argID+1 > m_ArgsCount || !(m_Args[argID+1]) )
         return strDefault;
 
     // the next one might be another argument.
-    if( m_Args[argID+1] && m_Args[argID+1][0] == '-' )
+    if( m_Args[argID+1][0] == '-' )
         return strDefault;
 
     return m_Args[argID+1];
+}
+
+bool CMD::GetArgBool( const char* strArg, bool bDefault )
+{
+    uint argID = FindArg(strArg);
+    if( !argID || argID+1 > m_ArgsCount || !(m_Args[argID+1]) )
+        return bDefault;
+
+    if( m_Args[argID+1][0] == '-' )
+        return bDefault;
+
+    if( m_Args[argID+1][0] == 't' )
+        return true;
+
+    if( m_Args[argID+1][0] == 'f' )
+        return false;
+
+    return atoi(m_Args[argID+1]) > 0;
+}
+
+int CMD::GetArgInt( const char* strArg, int iDefault )
+{
+    uint argID = FindArg(strArg);
+    if( !argID || argID+1 > m_ArgsCount || !(m_Args[argID+1]) )
+        return iDefault;
+
+    return atoi(m_Args[argID+1]);
+}
+
+float CMD::GetArgFloat( const char* strArg, float fDefault )
+{
+    uint argID = FindArg(strArg);
+    if( !argID || argID+1 > m_ArgsCount || !(m_Args[argID+1]) )
+        return fDefault;
+
+    return atof(m_Args[argID+1]);
+}
+
+double CMD::GetArgDouble( const char* strArg, double dDefault )
+{
+    uint argID = FindArg(strArg);
+    if( !argID || argID+1 > m_ArgsCount || !(m_Args[argID+1]) )
+        return dDefault;
+
+    return atof(m_Args[argID+1]);
 }
 
 uint CMD::FindArg( const char* strArg )
