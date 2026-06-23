@@ -24,7 +24,7 @@ const modelcache_t& AssetCache::GetModelData( std::string strModelPath )
 }
 
 
-static inline uint64_t FNVHashBytes( const char* data, size_t size )
+static inline uint64_t FNV1aHashBytes( const char* data, size_t size )
 {
     uint64_t hash = 14695981039346656037ULL; // FNV offset basis
     for( size_t i = 0; i < size; ++i )
@@ -37,8 +37,8 @@ static inline uint64_t FNVHashBytes( const char* data, size_t size )
 
 const modelcache_t& AssetCache::BuildModelCache( vertex_t* verts, uint verts_size, uint* indexes, uint indexes_size )
 {
-    uint64_t hashVerts = FNVHashBytes( reinterpret_cast<const char*>(verts), verts_size * sizeof(vertex_t) );
-    uint64_t hashIdx   = FNVHashBytes( reinterpret_cast<const char*>(indexes), indexes_size * sizeof(uint) );
+    uint64_t hashVerts = FNV1aHashBytes( reinterpret_cast<const char*>(verts), verts_size * sizeof(vertex_t) );
+    uint64_t hashIdx   = FNV1aHashBytes( reinterpret_cast<const char*>(indexes), indexes_size * sizeof(uint) );
     std::string strKey = "@built_FNVhash:(" + std::to_string(hashVerts) + "):(" + std::to_string(hashIdx) + ")";
 
     // If this exact mesh data was already built, return cached version
