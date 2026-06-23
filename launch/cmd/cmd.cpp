@@ -1,7 +1,7 @@
 #include "cmd.h"
 #include <iostream>
 #include <cstring>
-
+#include "mytypes.h"
 
 
 char* CMD::m_Args[CMD_ARGS_RESERVE] = {};

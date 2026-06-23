@@ -1,6 +1,7 @@
 #include <string> 
 #include <vector> 
 #include <string_view>
+#include "mytypes.h"
 
 #define CMD_ARGS_MAX 128
 #define CMD_ARGS_RESERVE CMD_ARGS_MAX
