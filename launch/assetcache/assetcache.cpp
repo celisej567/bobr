@@ -1,6 +1,9 @@
 #include "assetcache/assetcache.hpp"
 #include "modelcache.hpp"
+#include "texturecache.hpp"
 #include "mytypes.h"
+
+#include "stb_image.h"
 
 #define TINYOBJLOADER_IMPLEMENTATION
 #include "tiny_obj_loader.h"
@@ -9,8 +12,10 @@
 #include "glad/glad.h"
 
 static std::unordered_map<std::string, modelcache_t> m_mapCachedModels;
+static std::unordered_map<std::string, texturecache_t> m_mapCachedTextures;
 
-const modelcache_t AssetCache::s_EmptyCache;
+const modelcache_t AssetCache::s_EmptyModelCache;
+const texturecache_t AssetCache::s_EmptyTextureCache;
 
 const modelcache_t& AssetCache::GetModelData( std::string strModelPath )
 {
@@ -23,6 +28,16 @@ const modelcache_t& AssetCache::GetModelData( std::string strModelPath )
     return GetEmptyModelCache();
 }
 
+const texturecache_t& AssetCache::GetTextureData( std::string strTexturePath )
+{
+    if( m_mapCachedTextures.contains(strTexturePath) )
+        return m_mapCachedTextures[strTexturePath];
+
+    if(LoadTextureFromDisk(strTexturePath))
+        return m_mapCachedTextures[strTexturePath];
+
+    return GetEmptyTextureCache();
+}
 
 static inline uint64_t FNV1aHashBytes( const char* data, size_t size )
 {
@@ -164,4 +179,82 @@ bool AssetCache::LoadModelFromDisk(std::string strModelPath)
     
     return true;
 
+}
+
+bool AssetCache::LoadTextureFromDisk(std::string strTexturePath)
+{
+    texturecache_t texcache;
+    
+    int nrChannels;
+    unsigned char *textureData = stbi_load(strTexturePath.c_str(), &texcache.width, &texcache.height, &nrChannels, 0);
+
+    if(!textureData)
+    {
+        std::cout << "Failed to load texture" << strTexturePath << std::endl;
+        return false;
+    }
+
+    m_mapCachedTextures[strTexturePath] = texcache;
+    m_mapCachedTextures[strTexturePath].textureData = textureData;
+
+    texturecache_t& texcache_new = m_mapCachedTextures[strTexturePath];
+
+    std::cout << "Texture: " <<strTexturePath << "\n"
+     << "Channels: " << nrChannels << "\n";
+
+    GLenum textureType;
+    GLenum textureTypeInternal;
+
+    switch(nrChannels)
+    {
+        case 1:
+            textureTypeInternal = GL_R8;
+            textureType = GL_RED;
+            std::cout << "Type: GL_RED\n";
+            std::cout << "Internal Type: GL_R8\n";
+
+            break;
+        
+        case 2:
+            textureTypeInternal = GL_RG8;
+            textureType = GL_RG;
+            std::cout << "Type: GL_RG\n";
+            std::cout << "Internal Type: GL_RG8\n";
+            break;
+
+        case 3:
+            textureTypeInternal = GL_RGB8;
+            textureType = GL_RGB;
+            std::cout << "Type: GL_RGB\n";
+            std::cout << "Internal Type: GL_RGB8\n";
+            break;
+
+        case 4:
+            textureTypeInternal = GL_RGBA8;
+            textureType = GL_RGBA;
+            std::cout << "Type: GL_RGBA\n";
+            std::cout << "Internal Type: GL_RGBA8\n";
+            break;
+
+        default:
+            textureTypeInternal = GL_RGB8;
+            textureType = GL_RGB;
+            std::cout << "Type: GL_RGB\n";
+            std::cout << "Internal Type: GL_RGB8\n";
+            break;
+    }
+
+    glGenTextures(1, &texcache_new.ID);
+    glBindTexture(GL_TEXTURE_2D, texcache_new.ID); 
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+
+    glTexImage2D(GL_TEXTURE_2D, 0, textureTypeInternal, texcache_new.width, texcache_new.height, 0, textureType, GL_UNSIGNED_BYTE, texcache_new.textureData);
+    glGenerateMipmap(GL_TEXTURE_2D);
+
+    return true;
 }
