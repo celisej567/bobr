@@ -30,6 +30,7 @@
 #include "cmd/cmd.h"
 
 #include "iomanip"
+#include "dbg.h"
 
 #define WND_WIDTH 800
 #define WND_HEIGHT 600
@@ -132,6 +133,8 @@ glm::vec3 cubePositions[] = {
 int main(int argc, char **argv)
 {
     puts("bebra\n");
+    ConMsg("new bebra %s\n", "aboba");
+    CMD::Msg("new CMD bebra %s\n", "aboba");
 
     CMD::ProcessArguments(argc, argv);
 

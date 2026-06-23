@@ -1,3 +1,4 @@
+#pragma once
 #include <string> 
 #include <vector> 
 #include <string_view>
@@ -10,6 +11,8 @@ class CMD
 {
 
 public:
+
+    static void Msg(std::string str, ...); 
     // Get an argument parameter as a string.
     // Case sensitive.
     static const char* GetArg( const char* strArg, const char* strDefault = NULL );
