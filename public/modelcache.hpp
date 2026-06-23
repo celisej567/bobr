@@ -16,35 +16,35 @@ struct modelcache_t
     std::vector<uint>     m_vecIndexes;
 };
 
-inline bool IsValid(const modelcache_t& MyModelCache)
+inline bool IsValid(const modelcache_t& x)
 {
-    if(!(MyModelCache.bInit))
+    if(!(x.bInit))
         return false;
 
-    if (MyModelCache.VBO == MODELCACHE_VBO_INVALID_VALUE ||
-        MyModelCache.VAO == MODELCACHE_VBO_INVALID_VALUE ||
-        MyModelCache.EBO == MODELCACHE_VBO_INVALID_VALUE
+    if (x.VBO == MODELCACHE_VBO_INVALID_VALUE ||
+        x.VAO == MODELCACHE_VBO_INVALID_VALUE ||
+        x.EBO == MODELCACHE_VBO_INVALID_VALUE
     )
         return false;
 
-    if( MyModelCache.m_vecVerts.empty() || MyModelCache.m_vecIndexes.empty() )
+    if( x.m_vecVerts.empty() || x.m_vecIndexes.empty() )
         return false; 
 
     return true; 
 }
 
-inline bool IsValid(const modelcache_t* MyModelCache)
+inline bool IsValid(const modelcache_t* x)
 {
-    if(!(MyModelCache->bInit))
+    if(!(x->bInit))
         return false;
 
-    if (MyModelCache->VBO == MODELCACHE_VBO_INVALID_VALUE ||
-        MyModelCache->VAO == MODELCACHE_VBO_INVALID_VALUE ||
-        MyModelCache->EBO == MODELCACHE_VBO_INVALID_VALUE
+    if (x->VBO == MODELCACHE_VBO_INVALID_VALUE ||
+        x->VAO == MODELCACHE_VBO_INVALID_VALUE ||
+        x->EBO == MODELCACHE_VBO_INVALID_VALUE
     )
         return false;
 
-    if( MyModelCache->m_vecVerts.empty() || MyModelCache->m_vecIndexes.empty() )
+    if( x->m_vecVerts.empty() || x->m_vecIndexes.empty() )
         return false; 
 
     return true; 

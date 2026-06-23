@@ -15,6 +15,9 @@ public:
 
     static const modelcache_t& GetEmptyModelCache() {return s_EmptyModelCache;};
     static const texturecache_t& GetEmptyTextureCache() {return s_EmptyTextureCache;};
+
+    static void Destroy();
+
 private:
     static const modelcache_t s_EmptyModelCache;   
     static const texturecache_t s_EmptyTextureCache;   

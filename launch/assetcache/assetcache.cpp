@@ -17,6 +17,45 @@ static std::unordered_map<std::string, texturecache_t> m_mapCachedTextures;
 const modelcache_t AssetCache::s_EmptyModelCache;
 const texturecache_t AssetCache::s_EmptyTextureCache;
 
+void AssetCache::Destroy()
+{
+    for (auto it = m_mapCachedModels.begin(); it != m_mapCachedModels.end(); )
+    {
+        modelcache_t& mdlcache = it->second;
+
+        // just to be safe
+        if(IsValid(mdlcache))
+        {
+            
+            glDeleteBuffers(1, &(mdlcache.EBO));
+            glDeleteBuffers(1, &(mdlcache.VBO));
+            glDeleteVertexArrays(1, &(mdlcache.VAO));
+            // do delete before this line
+             
+            it = m_mapCachedModels.erase(it);
+            continue;
+        }
+        ++it;
+    }
+
+    for (auto it = m_mapCachedTextures.begin(); it != m_mapCachedTextures.end(); )
+    {
+        texturecache_t& texcache = it->second;
+
+        // just to be safe
+        if(IsValid(texcache))
+        {
+            glDeleteTextures(1, &(texcache.ID));
+            free(texcache.textureData);
+            // do delete before this line
+
+            it = m_mapCachedTextures.erase(it);
+            continue;
+        }
+        ++it;
+    }
+}
+
 const modelcache_t& AssetCache::GetModelData( std::string strModelPath )
 {
     if( m_mapCachedModels.contains(strModelPath) )
@@ -186,16 +225,15 @@ bool AssetCache::LoadTextureFromDisk(std::string strTexturePath)
     texturecache_t texcache;
     
     int nrChannels;
-    unsigned char *textureData = stbi_load(strTexturePath.c_str(), &texcache.width, &texcache.height, &nrChannels, 0);
+    texcache.textureData = stbi_load(strTexturePath.c_str(), &texcache.width, &texcache.height, &nrChannels, 0);
 
-    if(!textureData)
+    if(!texcache.textureData)
     {
         std::cout << "Failed to load texture" << strTexturePath << std::endl;
         return false;
     }
 
     m_mapCachedTextures[strTexturePath] = texcache;
-    m_mapCachedTextures[strTexturePath].textureData = textureData;
 
     texturecache_t& texcache_new = m_mapCachedTextures[strTexturePath];
 
