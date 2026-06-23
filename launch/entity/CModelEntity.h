@@ -17,7 +17,7 @@ public:
 
     virtual void Think();
 
-    virtual bool IsVisible() { return m_bVisible; };
+    virtual bool IsVisible() { return m_bVisible && m_Model.IsValid(); };
     virtual void SetVisible(bool bEnable) { m_bVisible = bEnable; };
 
     virtual void Frame();

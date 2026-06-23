@@ -12,6 +12,7 @@ set(SOURCES
     entity/CRotatingModel.cpp
     entity/CGizmos.cpp
     cmd/cmd.cpp
+    assetcache/assetcache.cpp
     ${PROJECT_SOURCE_DIR}/thirdparty/glad/src/glad.c
 )
 
@@ -21,6 +22,7 @@ set(INCLUDE_DIRS
     ${PROJECT_SOURCE_DIR}/thirdparty/stb
     ${PROJECT_SOURCE_DIR}/thirdparty/glm
     ${PROJECT_SOURCE_DIR}/thirdparty
+    ${PROJECT_SOURCE_DIR}/public
 )
 
 set(CMAKE_CXX_STANDARD 23)
@@ -29,8 +31,8 @@ find_package(SDL3 REQUIRED)
 #find_package(OpenGL REQUIRED)
 
 if(LINUX)
-    add_compile_options("-fsanitize=address")
-    add_link_options("-lasan")
+#    add_compile_options("-fsanitize=address")
+#    add_link_options("-lasan")
 endif()
 add_executable(launch)
 

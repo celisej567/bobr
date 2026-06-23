@@ -29,6 +29,12 @@ public:
     virtual uint GetEntityIndex() { return m_uEntIndex; };
     virtual std::string GetClassname() { return m_strClassname; };
 
+    // Forcefully delete this entity.
+    // Bypasses whole entity logic.
+    // VERY DANGEROUS. USE IT OUTSIDE ROOT ENTITY LOGIC LOOP ONLY 
+    // ON YOUT OWN RISK!!!
+    virtual void ForceDelete() { delete this; };
+
 protected:
 
     virtual void SetEntityIndex(uint index) { m_uEntIndex = index; };

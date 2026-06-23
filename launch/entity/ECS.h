@@ -73,6 +73,8 @@ public:
     virtual uint GetEntityIndex() = 0;
     virtual std::string GetClassname() = 0;
 
+    virtual void ForceDelete() = 0;
+
 protected:
 
     virtual void SetEntityIndex(uint index) = 0;

@@ -1,3 +1,4 @@
+#include "modelcache.hpp"
 #include "shared.h"
 #include "CShader.h"
 #include "CModelEntity.h"
@@ -32,11 +33,14 @@ void CModelEntity::SetTextureName( std::string filename, GLenum textureType )
 void CModelEntity::Frame()
 {
 
+    if(!(m_Model.IsValid()))
+        return;
+
     g_ShaderIDMap["default_new"]->Use();
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, m_Texture);
 
-    glBindVertexArray(m_Model.VAO);
+    glBindVertexArray(m_Model.GetModelCache().VAO);
     glm::mat4 model = glm::mat4(1.0f);
     model = glm::translate(model, GetAbsPos() );
 

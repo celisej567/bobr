@@ -9,7 +9,7 @@ void ProcessEntitiesThink()
         if(pEntity->IsMarkedForDelete())
         {
             ExistingEntities().erase(EntityPair.first);
-            delete pEntity;
+            pEntity->ForceDelete();
             continue;
         }
 
@@ -25,15 +25,16 @@ void ProcessEntitiesFrame()
     for( auto EntityPair : ExistingEntities() )
     {
         IEntity* pEntity = EntityPair.second;
-        if( !(pEntity->IsVisible()) )
-            continue;
-        
         if(pEntity->IsMarkedForDelete())
         {
             ExistingEntities().erase(EntityPair.first);
-            delete pEntity;
+            pEntity->ForceDelete();
             continue;
         }
+
+        if( !(pEntity->IsVisible()) )
+            continue;
+        
 
         if(pEntity->IsEnabled())
         {
