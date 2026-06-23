@@ -40,7 +40,7 @@ void CModelEntity::Frame()
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, m_Texture);
 
-    glBindVertexArray(m_Model.GetModelCache().VAO);
+    glBindVertexArray(m_Model.GetModelCache()->VAO);
     glm::mat4 model = glm::mat4(1.0f);
     model = glm::translate(model, GetAbsPos() );
 

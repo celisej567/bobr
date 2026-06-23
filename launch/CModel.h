@@ -1,5 +1,6 @@
 #pragma once
 
+#include "assetcache/assetcache.hpp"
 #include "modelcache.hpp"
 #include "string"
 #include "vector"
@@ -23,14 +24,14 @@ public:
 
     void ProcessData( vertex_t* verts, uint verts_size, uint* indexes, uint indexes_size );
 
-    modelcache_t GetModelCache() {return m_ModelCache;};
-    bool IsValid() {return ::IsValid(m_ModelCache);}
+    const modelcache_t* GetModelCache() const {return m_ModelCache;};
+    bool IsValid() {return m_ModelCache && ::IsValid(*m_ModelCache);}
 
-    vertex_t* GetVerts() { return m_ModelCache.m_vecVerts.data(); };
-    uint GetVertsCount() { return m_ModelCache.m_vecVerts.size(); };
-    uint* GetIndexes()   { return m_ModelCache.m_vecIndexes.data(); };
-    uint GetIndexesCount() { return m_ModelCache.m_vecIndexes.size(); };
+    const vertex_t* GetVerts() const { return m_ModelCache ? m_ModelCache->m_vecVerts.data() : nullptr; };
+    uint GetVertsCount() const { return m_ModelCache ? m_ModelCache->m_vecVerts.size() : 0; };
+    const uint* GetIndexes() const { return m_ModelCache ? m_ModelCache->m_vecIndexes.data() : nullptr; };
+    uint GetIndexesCount() const { return m_ModelCache ? m_ModelCache->m_vecIndexes.size() : 0; };
 
 private:
-    modelcache_t m_ModelCache;
+    const modelcache_t* m_ModelCache = &AssetCache::GetEmptyModelCache();
 };

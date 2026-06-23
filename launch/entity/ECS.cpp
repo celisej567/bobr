@@ -1,15 +1,16 @@
 #include "shared.h"
 #include "ECS.h"
 
-void ProcessEntitiesThink()
+void ProcessEntitiesTick()
 {
-    for( auto EntityPair : ExistingEntities() )
+    auto& entities = ExistingEntities();
+    for (auto it = entities.begin(); it != entities.end(); )
     {
-        IEntity* pEntity = EntityPair.second;
+        IEntity* pEntity = it->second;
         if(pEntity->IsMarkedForDelete())
         {
-            ExistingEntities().erase(EntityPair.first);
             pEntity->ForceDelete();
+            it = entities.erase(it);
             continue;
         }
 
@@ -17,6 +18,7 @@ void ProcessEntitiesThink()
         {
             pEntity->Tick();
         }
+        ++it;
     }
 }
 

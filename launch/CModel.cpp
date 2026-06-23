@@ -17,10 +17,10 @@ CModel::CModel( vertex_t* verts, uint verts_size, uint* indexes, uint indexes_si
 
 void CModel::ProcessFile( std::string filename )
 {
-    m_ModelCache = AssetCache::GetModelData(filename);
+    m_ModelCache = &AssetCache::GetModelData(filename);
 }
 
 void CModel::ProcessData( vertex_t* verts, uint verts_size, uint* indexes, uint indexes_size )
 {
-     m_ModelCache = AssetCache::BuildModelCache(verts, verts_size, indexes, indexes_size);
+    m_ModelCache = &AssetCache::BuildModelCache(verts, verts_size, indexes, indexes_size);
 }

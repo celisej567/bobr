@@ -10,7 +10,9 @@
 
 static std::unordered_map<std::string, modelcache_t> m_mapCachedModels;
 
-modelcache_t AssetCache::GetModelData( std::string strModelPath )
+const modelcache_t AssetCache::s_EmptyCache;
+
+const modelcache_t& AssetCache::GetModelData( std::string strModelPath )
 {
     if( m_mapCachedModels.contains(strModelPath) )
         return m_mapCachedModels[strModelPath];
@@ -18,13 +20,32 @@ modelcache_t AssetCache::GetModelData( std::string strModelPath )
     if(LoadModelFromDisk(strModelPath))
         return m_mapCachedModels[strModelPath];
 
-    modelcache_t mdlcache; // force to return invalid cache
-    return mdlcache;
+    return GetEmptyModelCache();
 }
 
-modelcache_t AssetCache::BuildModelCache( vertex_t* verts, uint verts_size, uint* indexes, uint indexes_size )
+
+static inline uint64_t FNVHashBytes( const char* data, size_t size )
 {
-    modelcache_t mdlcache;
+    uint64_t hash = 14695981039346656037ULL; // FNV offset basis
+    for( size_t i = 0; i < size; ++i )
+    {
+        hash ^= static_cast<uint8_t>(data[i]);
+        hash *= 1099511628211ULL; // FNV prime
+    }
+    return hash;
+}
+
+const modelcache_t& AssetCache::BuildModelCache( vertex_t* verts, uint verts_size, uint* indexes, uint indexes_size )
+{
+    uint64_t hashVerts = FNVHashBytes( reinterpret_cast<const char*>(verts), verts_size * sizeof(vertex_t) );
+    uint64_t hashIdx   = FNVHashBytes( reinterpret_cast<const char*>(indexes), indexes_size * sizeof(uint) );
+    std::string strKey = "@built_FNVhash:(" + std::to_string(hashVerts) + "):(" + std::to_string(hashIdx) + ")";
+
+    // If this exact mesh data was already built, return cached version
+    if( m_mapCachedModels.contains(strKey) )
+        return m_mapCachedModels[strKey];
+
+    modelcache_t& mdlcache = m_mapCachedModels[strKey];
     mdlcache.m_vecVerts = std::vector<vertex_t>(verts, verts+(verts_size));
     mdlcache.m_vecIndexes = std::vector<uint>(indexes, indexes+(indexes_size));
 
@@ -58,7 +79,7 @@ modelcache_t AssetCache::BuildModelCache( vertex_t* verts, uint verts_size, uint
     // mark cache as filled with valid data.
     mdlcache.bInit = true;
 
-    return mdlcache;
+    return m_mapCachedModels[strKey];
 }
 
 bool AssetCache::LoadModelFromDisk(std::string strModelPath)

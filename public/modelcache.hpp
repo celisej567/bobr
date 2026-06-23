@@ -16,7 +16,7 @@ struct modelcache_t
     std::vector<uint>     m_vecIndexes;
 };
 
-inline bool IsValid(modelcache_t& MyModelCache)
+inline bool IsValid(const modelcache_t& MyModelCache)
 {
     if(!(MyModelCache.bInit))
         return false;
@@ -28,6 +28,23 @@ inline bool IsValid(modelcache_t& MyModelCache)
         return false;
 
     if( MyModelCache.m_vecVerts.empty() || MyModelCache.m_vecIndexes.empty() )
+        return false; 
+
+    return true; 
+}
+
+inline bool IsValid(const modelcache_t* MyModelCache)
+{
+    if(!(MyModelCache->bInit))
+        return false;
+
+    if (MyModelCache->VBO == MODELCACHE_VBO_INVALID_VALUE ||
+        MyModelCache->VAO == MODELCACHE_VBO_INVALID_VALUE ||
+        MyModelCache->EBO == MODELCACHE_VBO_INVALID_VALUE
+    )
+        return false;
+
+    if( MyModelCache->m_vecVerts.empty() || MyModelCache->m_vecIndexes.empty() )
         return false; 
 
     return true; 

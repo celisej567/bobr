@@ -21,7 +21,7 @@ class CEntityClassnameBuilder;
 inline IEntity* CreateEntity(std::string classname);
 inline void SpawnEntity(IEntity* pEntity);
 inline void DeleteEntity(IEntity* pEntity);
-void ProcessEntitiesThink();
+void ProcessEntitiesTick();
 void ProcessEntitiesFrame();
 
 // TODO (celisej): make some kind of InitializeEntitySystem() function or something

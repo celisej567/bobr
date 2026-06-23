@@ -1,3 +1,4 @@
+#include "entity/ECS.h"
 #include "iostream"
 #include "SDL3/SDL.h"
 #include "SDL3/SDL_mouse.h"
@@ -11,6 +12,7 @@
 #include "glm.hpp"
 #include "gtc/matrix_transform.hpp"
 #include "gtc/type_ptr.hpp"
+#include <SDL3/SDL_scancode.h>
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
@@ -341,6 +343,23 @@ int main(int argc, char **argv)
 							//SDL_SetRelativeMouseMode(!SDL_GetRelativeMouseMode());
 							break;
 						}
+                        case SDL_SCANCODE_J:
+                        {  
+                            if(ent2)
+                            {
+                                DeleteEntity(ent2);
+                                ent2 = 0;
+                            }
+                            else
+                            {
+                                ent2 = (CModelEntity*)CreateEntity("model_entity");
+                                ent2->SetAbsPos({0,10,0});
+                                ent2->SetModelName("models/box.obj");
+                                ent2->SetTextureName("textures/container.jpg", GL_RGB);
+                                SpawnEntity(ent2);
+                            }
+                        }
+                        break;
                         default:
                         break;
 					}
@@ -373,7 +392,7 @@ int main(int argc, char **argv)
 			}
         }
 
-        ProcessEntitiesThink();
+        ProcessEntitiesTick();
 
 		const bool *key_states = SDL_GetKeyboardState(NULL);
 
@@ -408,77 +427,6 @@ int main(int argc, char **argv)
         projection = glm::perspective(glm::radians(fov), (float)WND_WIDTH / (float)WND_HEIGHT, 0.1f, 100.0f);
 
         ProcessEntitiesFrame();
-
-        /*
-        glm::mat4 projection = glm::mat4(0);
-        {	
-            float g = 1.0f / std::tan(0.5f * glm::radians(fov));
-            projection[0][0] = g / ((float)WND_WIDTH / (float)WND_HEIGHT);
-            projection[1][1] = g;
-            projection[2][3] = -1;
-            projection[3][2] = 0.01f;
-        }
-        */
-        /*
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, texture1);
-        glActiveTexture(GL_TEXTURE1);
-        glBindTexture(GL_TEXTURE_2D, texture2);
-        glBindVertexArray(VAO);
-
-		for(unsigned int i = 0; i < 10; i++)
-		{
-		    glm::mat4 model = glm::mat4(1.0f);
-		    model = glm::translate(model, cubePositions[i]);
-		    float angle = 20.0f * i; 
-		    model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
-
-
-			//glm::mat4 model = glm::mat4(1.0f);
-			//model = glm::rotate(model, glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-			if( !((i+1) % 3) || i == 0 )
-				model = glm::rotate(model, time * glm::radians(50.0f), glm::vec3(0.5f, 1.0f, 0.5f));
-
-    		//view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
-
-			//float fov = 45;
-			//if(g_pActiveCamera)
-			//	fov = g_pActiveCamera->GetFov();
-
-    		GLfloat* model_p = glm::value_ptr(model);
-    		GLfloat* view_p = glm::value_ptr(view);
-    		GLfloat* projection_p = glm::value_ptr(projection);
-
-
-        	shader1.SetUniformMat4("model", model_p);
-        	shader1.SetUniformMat4("view", view_p);
-        	shader1.SetUniformMat4("proj", projection_p);
-
-		
-		    glDrawArrays(GL_TRIANGLES, 0, 36);
-		}
-
-        glBindVertexArray(ObjModel.VAO);
-        glm::mat4 model = glm::mat4(1.0f);
-        model = glm::translate(model, glm::vec3(0,0,0));
-
-        //float fov = 45;
-		//if(g_pActiveCamera)
-		//	fov = g_pActiveCamera->GetFov();
-
-    	//glm::mat4 projection = glm::perspective(glm::radians(fov), (float)WND_WIDTH / (float)WND_HEIGHT, 0.1f, 100.0f);	
-
-        GLfloat* model_p = glm::value_ptr(model);
-        GLfloat* view_p = glm::value_ptr(view);
-        GLfloat* projection_p = glm::value_ptr(projection);
-
-        shader1.SetUniformMat4("model", model_p);
-        shader1.SetUniformMat4("view", view_p);
-        shader1.SetUniformMat4("proj", projection_p);
-
-        glDrawElements(GL_TRIANGLES, ObjModel.GetIndexesCount(), GL_UNSIGNED_INT, 0);
-
-        */
 
         SDL_GL_SwapWindow(wnd);
         glFinish();
