@@ -1,8 +1,14 @@
 cmake_minimum_required( VERSION 4.0 )
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-project( govno )
+project( bobr )
+
+set(BOBR_INSTALL_DIR ${CMAKE_SOURCE_DIR}/_BUILD)
+
+set(CMAKE_INSTALL_PREFIX ${BOBR_INSTALL_DIR})
 
 set(CMAKE_BUILD_TYPE Debug)
 
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/_BUILD)
 add_subdirectory( launch )
+
+# change this behaviour later
+install(DIRECTORY ${CMAKE_SOURCE_DIR}/resources/ DESTINATION ${BOBR_INSTALL_DIR} OPTIONAL)

@@ -1,4 +1,7 @@
 
+cmake_policy(SET CMP0207 NEW)
+
+
 set(SOURCES
     drazdropermovich.cpp
     FileSystemStuff.cpp
@@ -27,6 +30,10 @@ set(INCLUDE_DIRS
 
 set(CMAKE_CXX_STANDARD 23)
 
+if(WIN32)
+	set(CMAKE_PREFIX_PATH "${CMAKE_PREFIX_PATH}" ${PROJECT_SOURCE_DIR}/thirdparty/SDL3-VC)
+endif()
+
 find_package(SDL3 REQUIRED)
 #find_package(OpenGL REQUIRED)
 
@@ -36,9 +43,27 @@ if(LINUX)
 endif()
 add_executable(launch)
 
-
+# i whould like to remove sdl3 entirely later.
 target_link_libraries(launch PRIVATE SDL3::SDL3)
 #target_link_libraries(launch PRIVATE OpenGL::GL)
 
 target_sources(launch PRIVATE ${SOURCES})
 target_include_directories(launch BEFORE PRIVATE ${INCLUDE_DIRS})
+
+install(TARGETS launch RUNTIME DESTINATION .)
+install(FILES $<TARGET_PDB_FILE:launch> DESTINATION . OPTIONAL)
+
+    install(TARGETS launch
+        RUNTIME_DEPENDENCIES
+			DIRECTORIES $<TARGET_FILE_DIR:SDL3::SDL3>
+            PRE_EXCLUDE_REGEXES
+                "api-ms-win-.*" "ext-ms-.*"
+                "libc\.so\..*" "libgcc_s\.so\..*" "libm\.so\..*" "libstdc\\+\\+\.so\..*"
+				 "[Vv][Cc][Rr][Uu][Nn][Tt][Ii][Mm][Ee].*" "[Mm][Ss][Vv][Cc][Pp].*"
+            POST_EXCLUDE_REGEXES
+                "^\/lib.*" "^\/usr\/lib.*"
+                "C:[\\\/][Ww][Ii][Nn][Dd][Oo][Ww][Ss][\\\/].*"
+        ARCHIVE DESTINATION .
+        LIBRARY DESTINATION .
+        RUNTIME DESTINATION .
+    )

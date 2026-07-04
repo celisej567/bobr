@@ -98,7 +98,9 @@ int main(int argc, char **argv)
         std::cout << "Failed to initialize GLAD" << std::endl;
         return -1;
     }
-    //SDL_GL_SetSwapInterval(1);
+
+    CMD::Msg("-vsync = %d\n", CMD::GetArgInt("-vsync", 0));
+    SDL_GL_SetSwapInterval(CMD::GetArgInt("-vsync", 0));
 
     const char* gl_version = (const char *)glGetString(GL_VERSION);
     std::cout << gl_version << std::endl;
@@ -150,6 +152,17 @@ int main(int argc, char **argv)
     SpawnEntity(ent3);
 
     //glm::mat4 projection = glm::perspective(glm::radians(fov), (float)WND_WIDTH / (float)WND_HEIGHT, 0.1f, 100.0f);	
+
+    //temp
+    struct FPSTimer
+    {
+        Uint64 current_time = SDL_GetTicks();
+        Uint64 fps_timer = current_time;
+        int frame_count = 0;
+        int current_fps = 0;
+        char window_title[128];
+    } fps_timer_shit;
+
 
     SDL_Event event;
     bool quit = false;
@@ -263,6 +276,23 @@ int main(int argc, char **argv)
         projection = glm::perspective(glm::radians(fov), (float)WND_WIDTH / (float)WND_HEIGHT, 0.1f, 100.0f);
 
         ProcessEntitiesFrame();
+
+        ///////// Fps counter stuff
+        {
+            fps_timer_shit.frame_count++;
+            fps_timer_shit.current_time = SDL_GetTicks();
+
+
+            if (fps_timer_shit.current_time - fps_timer_shit.fps_timer >= 1000) {
+                fps_timer_shit.current_fps = fps_timer_shit.frame_count;
+                fps_timer_shit.frame_count = 0;
+                fps_timer_shit.fps_timer = fps_timer_shit.current_time;
+
+                // Формируем и устанавливаем новый заголовок окна
+                SDL_snprintf(fps_timer_shit.window_title, sizeof(fps_timer_shit.window_title), "SDL3 FPS: %d", fps_timer_shit.current_fps);
+                SDL_SetWindowTitle(wnd, fps_timer_shit.window_title);
+            }
+        }
 
         SDL_GL_SwapWindow(wnd);
         glFinish();
