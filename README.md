@@ -1,13 +1,20 @@
-- Get SDL3 somewhere
+## Windows
 
-- mkdir build
+In Visual Studio Powershell:
 
-- cd build ; cmake .. ; cd ..
+- ``mkdir build``
+- ``cd build``
+- ``cmake .. -G "Visual Studio 18 2026"``
+- Rebuild whole solution
+- Do INSTALL
+- Files will be in (project root folder)/_BUILD/
 
-- cmake --build build/ -j 8
 
-- copy everything from `resources` to `_BUILD`
+## Linux (tested on arch btw)
 
-- cd `_BUILD`
-
-- ./launch
+- Get sdl3 package somewhere
+- ``mkdir build; cd build``
+- ``cmake ..``
+- ``cmake --build .``
+- ``cmake --install .``
+- Files will be in (project root folder)/_BUILD/

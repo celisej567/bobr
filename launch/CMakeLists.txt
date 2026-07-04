@@ -51,7 +51,10 @@ target_sources(launch PRIVATE ${SOURCES})
 target_include_directories(launch BEFORE PRIVATE ${INCLUDE_DIRS})
 
 install(TARGETS launch RUNTIME DESTINATION .)
-install(FILES $<TARGET_PDB_FILE:launch> DESTINATION . OPTIONAL)
+
+if(WIN32)
+    install(FILES $<TARGET_PDB_FILE:launch> DESTINATION . OPTIONAL)
+endif()
 
     install(TARGETS launch
         RUNTIME_DEPENDENCIES
