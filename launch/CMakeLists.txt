@@ -16,6 +16,8 @@ set(SOURCES
     entity/CGizmos.cpp
     cmd/cmd.cpp
     assetcache/assetcache.cpp
+    window/SDL3Window.cpp
+
     ${PROJECT_SOURCE_DIR}/thirdparty/glad/src/glad.c
 )
 

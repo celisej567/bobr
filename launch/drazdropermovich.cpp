@@ -13,6 +13,7 @@
 #include "gtc/matrix_transform.hpp"
 #include "gtc/type_ptr.hpp"
 #include <SDL3/SDL_scancode.h>
+#include <SDL3/SDL_video.h>
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
@@ -31,9 +32,9 @@
 
 #include "iomanip"
 #include "dbg.h"
+#include "window/SDL3Window.hpp"
 
-#define WND_WIDTH 800
-#define WND_HEIGHT 600
+#include "shared.h"
 
 int main(int argc, char **argv)
 {
@@ -83,14 +84,16 @@ int main(int argc, char **argv)
         std::cout << "DID NOT Found -double" << std::endl;
     }
 
-    SDL_Init(SDL_INIT_VIDEO);
-    
-    wnd = SDL_CreateWindow("launch", WND_WIDTH, WND_HEIGHT, SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL);
+//    SDL_Init(SDL_INIT_VIDEO);
+
+
+    g_pMainWindow = new SDL3Window();
+ //   wnd = SDL_CreateWindow("launch", WND_WIDTH, WND_HEIGHT, SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL);
     //SDL_Renderer* ren = SDL_CreateRenderer(wnd, NULL);
 
-	SDL_SetWindowRelativeMouseMode(wnd, true);
+	g_pMainWindow->SetRelativeMouse(true);
     
-    SDL_GLContext sdl_gl = SDL_GL_CreateContext(wnd);
+    SDL_GLContext sdl_gl = SDL_GL_CreateContext((SDL_Window*)(g_pMainWindow->get()));
    
 
     if (!gladLoadGLLoader((GLADloadproc)SDL_GL_GetProcAddress))
@@ -188,7 +191,8 @@ int main(int argc, char **argv)
 					{
 						case SDL_SCANCODE_ESCAPE:
 						{
-							SDL_SetWindowRelativeMouseMode(wnd, !SDL_GetWindowRelativeMouseMode(wnd));
+                            
+							g_pMainWindow->ToggleRelativeMouse();
 							//SDL_SetRelativeMouseMode(!SDL_GetRelativeMouseMode());
 							break;
 						}
@@ -225,7 +229,7 @@ int main(int argc, char **argv)
 					
 					if(g_pActiveCamera)
 					{
-						if(!SDL_GetWindowRelativeMouseMode(wnd))
+						if(!g_pMainWindow->GetRelativeMouse())
 	            			break;
 						g_pActiveCamera->ProcessSDLMouseInput(event, deltaTime);
 					}
@@ -288,13 +292,13 @@ int main(int argc, char **argv)
                 fps_timer_shit.frame_count = 0;
                 fps_timer_shit.fps_timer = fps_timer_shit.current_time;
 
-                // Формируем и устанавливаем новый заголовок окна
-                SDL_snprintf(fps_timer_shit.window_title, sizeof(fps_timer_shit.window_title), "SDL3 FPS: %d", fps_timer_shit.current_fps);
-                SDL_SetWindowTitle(wnd, fps_timer_shit.window_title);
+                SDL_snprintf(fps_timer_shit.window_title, sizeof(fps_timer_shit.window_title), "| BUILD %s %s | SDL3 FPS : %d",__DATE__, __TIME__, fps_timer_shit.current_fps);
+                SDL_SetWindowTitle((SDL_Window*)g_pMainWindow->get(), fps_timer_shit.window_title);
             }
         }
 
-        SDL_GL_SwapWindow(wnd);
+        //TODO move to window class
+        SDL_GL_SwapWindow((SDL_Window*)g_pMainWindow->get());
         glFinish();
 
     }
@@ -308,8 +312,8 @@ int main(int argc, char **argv)
     }
 
 //     //SDL_DestroyRenderer(ren);
-    SDL_DestroyWindow(wnd);
-    wnd = NULL;
+    delete g_pMainWindow;
+    g_pMainWindow = NULL;
 
     puts("bebra2\n");
     

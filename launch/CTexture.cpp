@@ -17,7 +17,7 @@ CTexture::CTexture(const char* filename, GLenum textureType)
 
 CTexture::~CTexture()
 {
-    if(::IsValid(m_TextureCache) && wnd)
+    if(::IsValid(m_TextureCache) && g_pMainWindow->get())
         glDeleteTextures(1, &(m_TextureCache->ID));
 }
 
