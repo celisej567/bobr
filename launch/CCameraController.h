@@ -39,6 +39,7 @@ private:
 
     float m_flMoveSpeed = 5.0f;
     float m_flMoveSpeedFast = 10.0f;
+    float m_flRollSpeed = 50.0f;
     float m_flSensitivity = 0.1f;
 
     bool m_bEnabled = true;

@@ -28,6 +28,7 @@ void CCameraController::SetMoveSpeed(float flNormalSpeed, float flFastSpeed)
 void CCameraController::ProcessKeyboardInput(IInputManager* pInput, float deltaTime)
 {
     glm::vec3 pos = m_pCamera->GetPosition();
+    glm::vec3 angles = m_pCamera->GetAngles();
     float flMoveSpeed = pInput->IsKeyDown(KeyCode::Lshift) ? m_flMoveSpeedFast : m_flMoveSpeed;
 
     if (pInput->IsKeyDown(KeyCode::W))
@@ -48,7 +49,15 @@ void CCameraController::ProcessKeyboardInput(IInputManager* pInput, float deltaT
     if (pInput->IsKeyDown(KeyCode::Lctrl))
         pos -= (flMoveSpeed * deltaTime) * m_pCamera->GetUp();
 
+    // looks like shit and currently works like shit
+    //if(pInput->IsKeyDown(KeyCode::Q))
+    //    angles += (m_flRollSpeed * deltaTime) * glm::vec3(0,0,1);
+
+    //if(pInput->IsKeyDown(KeyCode::E))
+    //    angles -= (m_flRollSpeed * deltaTime) * glm::vec3(0,0,1);
+
     m_pCamera->SetPosition(pos);
+    m_pCamera->SetAngles(angles);
 }
 
 void CCameraController::ProcessMouseInput(IInputManager* pInput)

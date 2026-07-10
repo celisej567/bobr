@@ -34,14 +34,7 @@ public:
     {
         m_Angles = angles;
 
-        glm::vec3 direction;
-    	direction.x = cos(glm::radians(m_Angles[1])) * cos(glm::radians(m_Angles[0]));
-    	direction.y = sin(glm::radians(m_Angles[0]));
-    	direction.z = sin(glm::radians(m_Angles[1])) * cos(glm::radians(m_Angles[0]));
-    	
-        m_Forward = glm::normalize(direction);
-        
-        m_Right = glm::normalize(glm::cross(m_Forward, m_Up)); 
+        UpdateVectors();
 
     }
 
@@ -51,7 +44,7 @@ public:
 
 protected:
 
-    void UpdateCameraWorldAngles();
+    void UpdateVectors();
 
     glm::vec3 m_Position;
     glm::vec3 m_Angles;
