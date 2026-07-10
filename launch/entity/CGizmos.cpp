@@ -3,6 +3,8 @@
 #include "CModel.h"
 #include "CShader.h"
 #include "glm.hpp"
+#include "gtc/matrix_transform.hpp"
+#include "gtc/type_ptr.hpp"
 
 vertex_t LineVertexPos[] = 
 {

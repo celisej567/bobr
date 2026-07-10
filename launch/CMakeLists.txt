@@ -14,9 +14,11 @@ set(SOURCES
     entity/CModelEntity.cpp
     entity/CRotatingModel.cpp
     entity/CGizmos.cpp
+    CCameraController.cpp
     cmd/cmd.cpp
     assetcache/assetcache.cpp
     window/SDL3Window.cpp
+    inputmanager/SDL3InputManager.cpp
 
     ${PROJECT_SOURCE_DIR}/thirdparty/glad/src/glad.c
 )

@@ -25,6 +25,7 @@
 #include "FileSystemStuff.h"
 #include "CTexture.h"
 #include "CCamera.h"
+#include "CCameraController.h"
 #include "CModel.h"
 #include "entity/CModelEntity.h"
 
@@ -33,6 +34,7 @@
 #include "iomanip"
 #include "dbg.h"
 #include "window/SDL3Window.hpp"
+#include "inputmanager/SDL3InputManager.hpp"
 
 #include "shared.h"
 
@@ -87,7 +89,7 @@ int main(int argc, char **argv)
 //    SDL_Init(SDL_INIT_VIDEO);
 
 
-    g_pMainWindow = new SDL3Window();
+    g_pMainWindow = new CSDL3Window();
  //   wnd = SDL_CreateWindow("launch", WND_WIDTH, WND_HEIGHT, SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL);
     //SDL_Renderer* ren = SDL_CreateRenderer(wnd, NULL);
 
@@ -134,6 +136,11 @@ int main(int argc, char **argv)
 	CCamera mainCamera = CCamera();
 	g_pActiveCamera = &mainCamera;
 
+    CSDL3InputManager inputManager;
+    inputManager.Initialize(g_pMainWindow);
+
+    CCameraController camController(&mainCamera);
+
     CModel ObjModel("models/box.obj");
 
     CEntity* ent = (CEntity*)CreateEntity("base_entity");
@@ -167,7 +174,6 @@ int main(int argc, char **argv)
     } fps_timer_shit;
 
 
-    SDL_Event event;
     bool quit = false;
     while(!quit)
     {
@@ -177,80 +183,38 @@ int main(int argc, char **argv)
 		float currentFrame = time;
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
-		//float cameraSpeed = 10.f * deltaTime;
-		//glm::vec3 cameraRight = glm::normalize(glm::cross(cameraFront, cameraUp));
-        
-        while(SDL_PollEvent(&event))
+
+        inputManager.PollEvents();
+
+        if (inputManager.GetExitFlag())
+            quit = true;
+
+        if (inputManager.IsKeyPressed(KeyCode::Escape))
         {
-			switch(event.type)
-			{
+            g_pMainWindow->ToggleRelativeMouse();
+        }
 
-				case SDL_EVENT_KEY_DOWN:
-				{
-					switch(event.key.scancode)
-					{
-						case SDL_SCANCODE_ESCAPE:
-						{
-                            
-							g_pMainWindow->ToggleRelativeMouse();
-							//SDL_SetRelativeMouseMode(!SDL_GetRelativeMouseMode());
-							break;
-						}
-                        case SDL_SCANCODE_J:
-                        {  
-                            if(ent2)
-                            {
-                                DeleteEntity(ent2);
-                                ent2 = 0;
-                            }
-                            else
-                            {
-                                ent2 = (CModelEntity*)CreateEntity("model_entity");
-                                ent2->SetAbsPos({0,10,0});
-                                ent2->SetModelName("models/box.obj");
-                                ent2->SetTextureName("textures/container.jpg", GL_RGB);
-                                SpawnEntity(ent2);
-                            }
-                        }
-                        break;
-                        default:
-                        break;
-					}
-					
-					break;
-				}
-				case SDL_EVENT_MOUSE_WHEEL:
-				case SDL_EVENT_MOUSE_MOTION:
-    			case SDL_EVENT_MOUSE_BUTTON_DOWN:
-    			case SDL_EVENT_MOUSE_BUTTON_UP:
-    			case SDL_EVENT_MOUSE_ADDED:
-    			case SDL_EVENT_MOUSE_REMOVED:
-				{
-					
-					if(g_pActiveCamera)
-					{
-						if(!g_pMainWindow->GetRelativeMouse())
-	            			break;
-						g_pActiveCamera->ProcessSDLMouseInput(event, deltaTime);
-					}
-					
-					break;
-				}
-				case SDL_EVENT_QUIT:
-				{
-            		quit = true;
-            		break;
-				}
-
-			}
+        if (inputManager.IsKeyPressed(KeyCode::J))
+        {
+            if(ent2)
+            {
+                DeleteEntity(ent2);
+                ent2 = 0;
+            }
+            else
+            {
+                ent2 = (CModelEntity*)CreateEntity("model_entity");
+                ent2->SetAbsPos({0,10,0});
+                ent2->SetModelName("models/box.obj");
+                ent2->SetTextureName("textures/container.jpg", GL_RGB);
+                SpawnEntity(ent2);
+            }
         }
 
         ProcessEntitiesTick();
 
-		const bool *key_states = SDL_GetKeyboardState(NULL);
-
-		if(g_pActiveCamera)
-			g_pActiveCamera->ProcessSDLKeyInput(key_states, deltaTime);
+        // camera controller — keyboard always, mouse only when relative mode is on
+        camController.Update(&inputManager, deltaTime, g_pMainWindow->GetRelativeMouse());
 
         glViewport(0,0,WND_WIDTH,WND_HEIGHT);
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
@@ -302,6 +266,8 @@ int main(int argc, char **argv)
         glFinish();
 
     }
+
+    inputManager.Shutdown();
 
     AssetCache::Destroy();
 

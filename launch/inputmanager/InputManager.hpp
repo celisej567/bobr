@@ -260,11 +260,43 @@ enum KeyCode : unsigned char {
     Rhyper
 };
 
+enum class MouseButton : unsigned char {
+    Left = 0,
+    Right,
+    Middle,
+    X1,
+    X2,
+    Count
+};
+
 class IInputManager
 {
 public:
+    virtual ~IInputManager() = default;
+
     virtual bool Initialize(IWindow* hWindow) = 0;
     virtual void Shutdown() = 0;
 
-    virtual void UpdateQueue() = 0;
+    // Must be called once per frame at the start.
+    // Processes all pending window/input events and updates internal state.
+    virtual void PollEvents() = 0;
+
+    // Keyboard state
+    virtual bool IsKeyDown(KeyCode key) const = 0;       // held this frame
+    virtual bool IsKeyPressed(KeyCode key) const = 0;    // just went down this frame
+    virtual bool IsKeyReleased(KeyCode key) const = 0;   // just went up this frame
+
+    // Mouse buttons
+    virtual bool IsMouseButtonDown(MouseButton btn) const = 0;
+    virtual bool IsMouseButtonPressed(MouseButton btn) const = 0;
+    virtual bool IsMouseButtonReleased(MouseButton btn) const = 0;
+
+    // Mouse position and motion
+    virtual float GetMouseX() const = 0;
+    virtual float GetMouseY() const = 0;
+    virtual float GetMouseDeltaX() const = 0;
+    virtual float GetMouseDeltaY() const = 0;
+    virtual float GetScrollDelta() const = 0;
+
+    virtual bool GetExitFlag() const = 0;
 };

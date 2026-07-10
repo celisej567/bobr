@@ -1,9 +1,6 @@
 #pragma once
-#include "glad/glad.h"
 #include "glm.hpp"
-#include "SDL3/SDL.h"
 #include "gtc/matrix_transform.hpp"
-#include "gtc/type_ptr.hpp"
 #include "ICamera.h"
 #include "mytypes.h"
 
@@ -12,7 +9,6 @@ class CCamera : public ICamera
 public:
     CCamera();
     CCamera(glm::vec3 position, glm::vec3 angles, float flFloat);
-    //CCamera(glm::vec3 position, glm::vec3 angle, glm::vec3 forward, glm::vec3 right, glm::vec3 up);
 
     virtual glm::mat4 GetViewMatrix()
     {
@@ -30,15 +26,32 @@ public:
 			m_flFov = 1;
     }
 
-    virtual void ProcessSDLKeyInput(const bool* key_states, float deltaTime);
-    virtual void ProcessSDLMouseInput(SDL_Event& event, float deltaTime);
+    virtual glm::vec3 GetPosition() const { return m_Position; }
+    virtual void SetPosition(const glm::vec3& pos) { m_Position = pos; }
+
+    virtual glm::vec3 GetAngles() const { return m_Angles; }
+    virtual void SetAngles(const glm::vec3& angles)
+    {
+        m_Angles = angles;
+
+        glm::vec3 direction;
+    	direction.x = cos(glm::radians(m_Angles[1])) * cos(glm::radians(m_Angles[0]));
+    	direction.y = sin(glm::radians(m_Angles[0]));
+    	direction.z = sin(glm::radians(m_Angles[1])) * cos(glm::radians(m_Angles[0]));
+    	
+        m_Forward = glm::normalize(direction);
+        
+        m_Right = glm::normalize(glm::cross(m_Forward, m_Up)); 
+
+    }
+
+    virtual glm::vec3 GetForward() const { return m_Forward; }
+    virtual glm::vec3 GetRight() const { return m_Right; }
+    virtual glm::vec3 GetUp() const { return m_Up; }
 
 protected:
 
     void UpdateCameraWorldAngles();
-
-    // use only if UpdateCameraWorldAngles has already been called
-    //void UpdateCameraLocalAngles();
 
     glm::vec3 m_Position;
     glm::vec3 m_Angles;

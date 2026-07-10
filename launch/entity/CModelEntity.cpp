@@ -2,6 +2,8 @@
 #include "shared.h"
 #include "CShader.h"
 #include "CModelEntity.h"
+#include "gtc/matrix_transform.hpp"
+#include "gtc/type_ptr.hpp"
 
 LINK_CLASSNAME_TO_ENTITY(model_entity, CModelEntity);
 

@@ -2,7 +2,7 @@
 #include "Window.hpp"
 #include <SDL3/SDL_mouse.h>
 
-SDL3Window::SDL3Window()
+CSDL3Window::CSDL3Window()
 {
 
     SDL_Init(SDL_INIT_VIDEO);
@@ -13,23 +13,23 @@ SDL3Window::SDL3Window()
 	SDL_SetWindowRelativeMouseMode(wnd, true);
 }
 
-SDL3Window::~SDL3Window()
+CSDL3Window::~CSDL3Window()
 {
     SDL_DestroyWindow(wnd);
     wnd = NULL;
 }
 
-void SDL3Window::SetRelativeMouse(bool bEnabled)
+void CSDL3Window::SetRelativeMouse(bool bEnabled)
 {
     SDL_SetWindowRelativeMouseMode(wnd, bEnabled);
 }
 
-bool SDL3Window::GetRelativeMouse()
+bool CSDL3Window::GetRelativeMouse()
 {
     return SDL_GetWindowRelativeMouseMode(wnd);
 }
 
-void SDL3Window::ToggleRelativeMouse()
+void CSDL3Window::ToggleRelativeMouse()
 {
     SDL_SetWindowRelativeMouseMode(wnd, !SDL_GetWindowRelativeMouseMode(wnd));
 }

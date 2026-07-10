@@ -1,10 +1,6 @@
 #pragma once 
 
-#include "glad/glad.h"
 #include "glm.hpp"
-#include "SDL3/SDL.h"
-#include "gtc/matrix_transform.hpp"
-#include "gtc/type_ptr.hpp"
 #include "mytypes.h"
 
 class ICamera
@@ -14,6 +10,13 @@ public:
     virtual float GetFov() = 0;
     virtual void SetFov(float flFov) = 0;
 
-    virtual void ProcessSDLKeyInput(const bool* key_states, float deltaTime) = 0;
-    virtual void ProcessSDLMouseInput(SDL_Event& event, float deltaTime) = 0;
+    virtual glm::vec3 GetPosition() const = 0;
+    virtual void SetPosition(const glm::vec3& pos) = 0;
+
+    virtual glm::vec3 GetAngles() const = 0;
+    virtual void SetAngles(const glm::vec3& angles) = 0;
+
+    virtual glm::vec3 GetForward() const = 0;
+    virtual glm::vec3 GetRight() const = 0;
+    virtual glm::vec3 GetUp() const = 0;
 };
