@@ -8,7 +8,7 @@ set(CMAKE_INSTALL_PREFIX ${BOBR_INSTALL_DIR})
 
 set(CMAKE_BUILD_TYPE Debug)
 
-add_subdirectory( launch )
+add_subdirectory( src/launch )
 
 # change this behaviour later
 install(DIRECTORY ${CMAKE_SOURCE_DIR}/resources/ DESTINATION ${BOBR_INSTALL_DIR} OPTIONAL)
