@@ -14,6 +14,7 @@
 #include "gtc/type_ptr.hpp"
 #include <SDL3/SDL_scancode.h>
 #include <SDL3/SDL_video.h>
+#include <dlfcn.h>
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
@@ -38,11 +39,49 @@
 
 #include "shared.h"
 
+#include "libs.h"
+
+typedef const char* (*ReturnSomeString_t)();
+typedef IMyLib* (*ReturnMyLib_t)();
+
 int main(int argc, char **argv)
 {
     puts("bebra\n");
     ConMsg("new bebra %s\n", "aboba");
     CMD::Msg("new CMD bebra %s\n", "aboba");
+
+    void* mylibdll = 0;
+    mylibdll = dlopen("libmylib.so", RTLD_LAZY);
+    if(mylibdll)
+    {
+        dlerror();
+        CMD::Msg("\n\nMYLIB Loaded\n\n");
+        ReturnSomeString_t my_func = (ReturnSomeString_t)dlsym(mylibdll, "ReturnSomeString");
+        const char* err = dlerror();
+        if(err)
+        {
+            CMD::Msg("Error: %s\n", err);
+            dlclose(mylibdll);
+        }
+        else 
+        {
+            CMD::Msg("GOT: %s\n", my_func() );
+            IMyLib* mylibObj = ((ReturnMyLib_t)dlsym(mylibdll, "GetMyLib"))();
+            mylibObj->aboba();
+            mylibObj->bebra();
+
+            IMyLib* SecmylibObj = ((ReturnMyLib_t)dlsym(mylibdll, "GetMyLib"))();
+            SecmylibObj->aboba();
+            SecmylibObj->bebra();
+            CMD::Msg("%p\n", mylibObj);
+            CMD::Msg("%p\n", SecmylibObj);
+        }
+    }
+    else
+    {
+        CMD::Msg("Error: %s\n", dlerror());
+    
+    }
 
     CMD::ProcessArguments(argc, argv);
 
