@@ -1,5 +1,5 @@
 #pragma once
-#include "window/Window.hpp"
+#include "libs.h"
 
 enum KeyCode : unsigned char {
     Unknown = 0,
@@ -269,6 +269,9 @@ enum class MouseButton : unsigned char {
     Count
 };
 
+//TODO: Move this somewhere else.
+class IWindow;
+
 class IInputManager
 {
 public:
@@ -300,3 +303,7 @@ public:
 
     virtual bool GetExitFlag() const = 0;
 };
+
+inline IInputManager* g_inputManager;
+
+typedef IInputManager* (*ReturnInputManager_t)();

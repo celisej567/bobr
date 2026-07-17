@@ -10,6 +10,7 @@ set(CMAKE_BUILD_TYPE Debug)
 
 add_subdirectory( src/launch )
 add_subdirectory( src/mylib )
+add_subdirectory( src/inputmanager )
 
 # change this behaviour later
 install(DIRECTORY ${CMAKE_SOURCE_DIR}/resources/ DESTINATION ${BOBR_INSTALL_DIR} OPTIONAL)

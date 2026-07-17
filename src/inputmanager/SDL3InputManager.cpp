@@ -1,7 +1,18 @@
 #include "SDL3InputManager.hpp"
-#include "window/Window.hpp"
 #include <SDL3/SDL_keycode.h>
 #include <SDL3/SDL_scancode.h>
+
+//TODO: Remove this
+class IWindow
+{
+public:
+    virtual ~IWindow() = default;
+    
+    virtual void* get() = 0;
+    virtual void SetRelativeMouse(bool bEnabled) = 0;
+    virtual bool GetRelativeMouse() = 0;
+    virtual void ToggleRelativeMouse() = 0;
+};
 
 CSDL3InputManager::CSDL3InputManager()
 {
@@ -331,4 +342,11 @@ KeyCode CSDL3InputManager::SDLScancodeToKeyCode(SDL_Scancode scancode)
 
         default:                        return KeyCode::Unknown;
     }
+}
+
+static CSDL3InputManager g_SDL3InputManager;
+
+extern "C"
+{
+INTERFACE_EXPOSE_OBJECT(IInputManager, &g_SDL3InputManager);
 }

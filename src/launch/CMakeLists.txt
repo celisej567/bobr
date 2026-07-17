@@ -19,7 +19,6 @@ set(SOURCES
     cmd/cmd.cpp
     assetcache/assetcache.cpp
     window/SDL3Window.cpp
-    inputmanager/SDL3InputManager.cpp
 
     ${PROJECT_SOURCE_DIR}/thirdparty/glad/src/glad.c
 )

@@ -35,7 +35,7 @@
 #include "iomanip"
 #include "dbg.h"
 #include "window/SDL3Window.hpp"
-#include "inputmanager/SDL3InputManager.hpp"
+#include "inputmanager/inputmanager.hpp"
 
 #include "shared.h"
 
@@ -49,39 +49,68 @@ int main(int argc, char **argv)
     puts("bebra\n");
     ConMsg("new bebra %s\n", "aboba");
     CMD::Msg("new CMD bebra %s\n", "aboba");
-
-    void* mylibdll = 0;
-    mylibdll = dlopen("libmylib.so", RTLD_LAZY);
-    if(mylibdll)
     {
-        dlerror();
-        CMD::Msg("\n\nMYLIB Loaded\n\n");
-        ReturnSomeString_t my_func = (ReturnSomeString_t)dlsym(mylibdll, "ReturnSomeString");
-        const char* err = dlerror();
-        if(err)
+        void* mylibdll = 0;
+        mylibdll = dlopen("./libmylib.so", RTLD_LAZY);
+        if(mylibdll)
         {
-            CMD::Msg("Error: %s\n", err);
-            dlclose(mylibdll);
-        }
-        else 
-        {
-            CMD::Msg("GOT: %s\n", my_func() );
-            IMyLib* mylibObj = ((ReturnMyLib_t)dlsym(mylibdll, "GetMyLib"))();
-            mylibObj->aboba();
-            mylibObj->bebra();
+            dlerror();
+            CMD::Msg("\n\nMYLIB Loaded\n\n");
+            ReturnSomeString_t my_func = (ReturnSomeString_t)dlsym(mylibdll, "ReturnSomeString");
+            const char* err = dlerror();
+            if(err)
+            {
+                CMD::Msg("Error: %s\n", err);
+                dlclose(mylibdll);
+            }
+            else 
+            {
+                CMD::Msg("GOT: %s\n", my_func() );
+                IMyLib* mylibObj = ((ReturnMyLib_t)dlsym(mylibdll, "GetMyLib"))();
+                mylibObj->aboba();
+                mylibObj->bebra();
 
-            IMyLib* SecmylibObj = ((ReturnMyLib_t)dlsym(mylibdll, "GetMyLib"))();
-            SecmylibObj->aboba();
-            SecmylibObj->bebra();
-            CMD::Msg("%p\n", mylibObj);
-            CMD::Msg("%p\n", SecmylibObj);
+                IMyLib* SecmylibObj = ((ReturnMyLib_t)dlsym(mylibdll, "GetMyLib"))();
+                SecmylibObj->aboba();
+                SecmylibObj->bebra();
+                CMD::Msg("%p\n", mylibObj);
+                CMD::Msg("%p\n", SecmylibObj);
+            }
+        }
+        else
+        {
+            CMD::Msg("Error: %s\n", dlerror());
+        
         }
     }
-    else
+
     {
-        CMD::Msg("Error: %s\n", dlerror());
-    
+        void* mylibdll = 0;
+        mylibdll = dlopen("./libinputmanager.so", RTLD_LAZY);
+        if(mylibdll)
+        {
+            dlerror();
+            CMD::Msg("\n\nInputManager Loaded\n\n");
+            ReturnInputManager_t my_func = (ReturnInputManager_t)dlsym(mylibdll, INTERFACE_GET_FUNC_NAME(IInputManager));
+            const char* err = dlerror();
+            if(err)
+            {
+                CMD::Msg("Error: %s\n", err);
+                dlclose(mylibdll);
+            }
+            else 
+            {
+                g_inputManager = my_func();
+            }
+        }
+        else
+        {
+            CMD::Msg("Error: %s\n", dlerror());
+        
+        }
     }
+
+
 
     CMD::ProcessArguments(argc, argv);
 
@@ -175,8 +204,8 @@ int main(int argc, char **argv)
 	CCamera mainCamera = CCamera();
 	g_pActiveCamera = &mainCamera;
 
-    CSDL3InputManager inputManager;
-    inputManager.Initialize(g_pMainWindow);
+    if(g_inputManager)
+        g_inputManager->Initialize(g_pMainWindow);
 
     CCameraController camController(&mainCamera);
 
@@ -223,37 +252,40 @@ int main(int argc, char **argv)
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
 
-        inputManager.PollEvents();
-
-        if (inputManager.GetExitFlag())
-            quit = true;
-
-        if (inputManager.IsKeyPressed(KeyCode::Escape))
+        if(g_inputManager)
         {
-            g_pMainWindow->ToggleRelativeMouse();
-        }
+            g_inputManager->PollEvents();
 
-        if (inputManager.IsKeyPressed(KeyCode::J))
-        {
-            if(ent2)
+            if (g_inputManager && g_inputManager->GetExitFlag())
+                quit = true;
+
+            if (g_inputManager->IsKeyPressed(KeyCode::Escape))
             {
-                DeleteEntity(ent2);
-                ent2 = 0;
+                g_pMainWindow->ToggleRelativeMouse();
             }
-            else
+
+            if (g_inputManager->IsKeyPressed(KeyCode::J))
             {
-                ent2 = (CModelEntity*)CreateEntity("model_entity");
-                ent2->SetAbsPos({0,10,0});
-                ent2->SetModelName("models/box.obj");
-                ent2->SetTextureName("textures/container.jpg", GL_RGB);
-                SpawnEntity(ent2);
+                if(ent2)
+                {
+                    DeleteEntity(ent2);
+                    ent2 = 0;
+                }
+                else
+                {
+                    ent2 = (CModelEntity*)CreateEntity("model_entity");
+                    ent2->SetAbsPos({0,10,0});
+                    ent2->SetModelName("models/box.obj");
+                    ent2->SetTextureName("textures/container.jpg", GL_RGB);
+                    SpawnEntity(ent2);
+                }
             }
         }
 
         ProcessEntitiesTick();
 
         // camera controller — keyboard always, mouse only when relative mode is on
-        camController.Update(&inputManager, deltaTime, g_pMainWindow->GetRelativeMouse());
+        camController.Update(g_inputManager, deltaTime, g_pMainWindow->GetRelativeMouse());
 
         glViewport(0,0,WND_WIDTH,WND_HEIGHT);
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
@@ -306,7 +338,8 @@ int main(int argc, char **argv)
 
     }
 
-    inputManager.Shutdown();
+    if(g_inputManager)
+    g_inputManager->Shutdown();
 
     AssetCache::Destroy();
 

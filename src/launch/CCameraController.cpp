@@ -11,7 +11,7 @@ CCameraController::CCameraController(ICamera* pCamera)
 
 void CCameraController::Update(IInputManager* pInput, float deltaTime, bool bProcessMouse)
 {
-    if (!m_bEnabled || !m_pCamera)
+    if (!m_bEnabled || !m_pCamera || !pInput)
         return;
 
     ProcessKeyboardInput(pInput, deltaTime);
