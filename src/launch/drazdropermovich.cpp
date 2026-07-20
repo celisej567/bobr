@@ -181,6 +181,7 @@ int main(int argc, char **argv)
     glViewport(0,0,WND_WIDTH,WND_HEIGHT);
 
 	glEnable(GL_DEPTH_TEST);
+	glDepthFunc(GL_GEQUAL);
 
     int nrAttributes;
     glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &nrAttributes);
@@ -289,7 +290,7 @@ int main(int argc, char **argv)
 
         glViewport(0,0,WND_WIDTH,WND_HEIGHT);
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-        glClearDepth(1);
+        glClearDepth(0);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		const float radius = 10.0f;
@@ -312,7 +313,7 @@ int main(int argc, char **argv)
 		if(g_pActiveCamera)
 				fov = g_pActiveCamera->GetFov();
 
-        projection = glm::perspective(glm::radians(fov), (float)WND_WIDTH / (float)WND_HEIGHT, 0.1f, 100.0f);
+        projection = glm::perspective(glm::radians(fov), (float)WND_WIDTH / (float)WND_HEIGHT, 100.0f, 0.1f);
 
         ProcessEntitiesFrame();
 
