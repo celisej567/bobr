@@ -44,6 +44,18 @@
 typedef const char* (*ReturnSomeString_t)();
 typedef IMyLib* (*ReturnMyLib_t)();
 
+glm::mat4 ReverseZPerspective(float fovRadians, float aspect, float nearPlane)
+{
+    float tangent = std::tan(fovRadians / 2.0f);
+    glm::mat4 Result(0.0f);
+    Result[0][0] = 1.0f / (aspect * tangent);
+    Result[1][1] = 1.0f / tangent;
+    Result[2][3] = -1.0f;
+    Result[2][2] = 0.0f;
+    Result[3][2] = nearPlane;
+    return Result;
+}
+
 int main(int argc, char **argv)
 {
     puts("bebra\n");
@@ -157,6 +169,7 @@ int main(int argc, char **argv)
 //    SDL_Init(SDL_INIT_VIDEO);
 
 
+    SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 32);
     g_pMainWindow = new CSDL3Window();
  //   wnd = SDL_CreateWindow("launch", WND_WIDTH, WND_HEIGHT, SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL);
     //SDL_Renderer* ren = SDL_CreateRenderer(wnd, NULL);
@@ -180,8 +193,9 @@ int main(int argc, char **argv)
 
     glViewport(0,0,WND_WIDTH,WND_HEIGHT);
 
-	glEnable(GL_DEPTH_TEST);
-	glDepthFunc(GL_GEQUAL);
+    glEnable(GL_DEPTH_TEST);
+    glClipControl(GL_LOWER_LEFT, GL_ZERO_TO_ONE);
+    glDepthFunc(GL_GREATER);
 
     int nrAttributes;
     glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &nrAttributes);
@@ -290,7 +304,7 @@ int main(int argc, char **argv)
 
         glViewport(0,0,WND_WIDTH,WND_HEIGHT);
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-        glClearDepth(0);
+        glClearDepth(0.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		const float radius = 10.0f;
@@ -313,7 +327,7 @@ int main(int argc, char **argv)
 		if(g_pActiveCamera)
 				fov = g_pActiveCamera->GetFov();
 
-        projection = glm::perspective(glm::radians(fov), (float)WND_WIDTH / (float)WND_HEIGHT, 100.0f, 0.1f);
+        projection = ReverseZPerspective(glm::radians(fov), (float)WND_WIDTH / (float)WND_HEIGHT, 0.125);
 
         ProcessEntitiesFrame();
 
