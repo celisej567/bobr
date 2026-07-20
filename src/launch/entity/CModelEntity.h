@@ -12,8 +12,8 @@ public:
     CModelEntity();
     ~CModelEntity();
 
-    void SetModelName(std::string filename);
-    void SetTextureName(std::string filename, GLenum textureType);
+    void SetModelName(const std::string &filename);
+    void SetTextureName(const std::string &filename, GLenum textureType);
 
     virtual void Think();
 

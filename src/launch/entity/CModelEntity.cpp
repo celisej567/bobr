@@ -22,12 +22,12 @@ void CModelEntity::Think()
     BaseClass::Think();
 }
 
-void CModelEntity::SetModelName( std::string filename )
+void CModelEntity::SetModelName( const std::string &filename )
 {
     m_Model.ProcessFile(filename);
 }
 
-void CModelEntity::SetTextureName( std::string filename, GLenum textureType )
+void CModelEntity::SetTextureName( const std::string &filename, GLenum textureType )
 {
     m_Texture.ProcessFile(filename.data(), textureType);
 }

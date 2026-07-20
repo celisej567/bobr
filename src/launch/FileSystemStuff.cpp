@@ -2,7 +2,7 @@
 #include "FileSystemStuff.h"
 #include "string"
 
-std::string GetFileString(std::string str)
+std::string GetFileString(const std::string &str)
 {
     std::ifstream inFile(str/*, std::ios_base::ate*/);
     if (!inFile.is_open())
@@ -25,7 +25,7 @@ std::string GetFileString(std::string str)
     return ghghgh.str();
 }
 
-std::vector<std::string> MySplitString(std::string buff)
+std::vector<std::string> MySplitString(const std::string &buff)
 {
     std::vector<std::string> retvec;
     if(buff.empty())

@@ -1,7 +1,7 @@
 #pragma once
 #include "libs.h"
 
-enum KeyCode : unsigned char {
+enum KeyCode : unsigned int {
     Unknown = 0,
     Return,
     Escape,

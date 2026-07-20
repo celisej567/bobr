@@ -21,7 +21,7 @@ CSDL3InputManager::CSDL3InputManager()
 
 CSDL3InputManager::~CSDL3InputManager()
 {
-    Shutdown();
+    CSDL3InputManager::Shutdown();
 }
 
 bool CSDL3InputManager::Initialize(IWindow* hWindow)
@@ -125,32 +125,29 @@ void CSDL3InputManager::PollEvents()
 
 bool CSDL3InputManager::IsKeyDown(KeyCode key) const
 {
-    int idx = static_cast<int>(key);
-    if (idx < 0 || idx >= KEY_COUNT)
+    if (key >= KEY_COUNT)
         return false;
-    return m_KeyDown[idx];
+    return m_KeyDown[key];
 }
 
 bool CSDL3InputManager::IsKeyPressed(KeyCode key) const
 {
-    int idx = static_cast<int>(key);
-    if (idx < 0 || idx >= KEY_COUNT)
+    if (key >= KEY_COUNT)
         return false;
-    return m_KeyPressed[idx];
+    return m_KeyPressed[key];
 }
 
 bool CSDL3InputManager::IsKeyReleased(KeyCode key) const
 {
-    int idx = static_cast<int>(key);
-    if (idx < 0 || idx >= KEY_COUNT)
+    if (key >= KEY_COUNT)
         return false;
-    return m_KeyReleased[idx];
+    return m_KeyReleased[key];
 }
 
 bool CSDL3InputManager::IsMouseButtonDown(MouseButton btn) const
 {
     int idx = static_cast<int>(btn);
-    if (idx < 0 || idx >= MOUSE_BUTTON_COUNT)
+    if (idx >= MOUSE_BUTTON_COUNT)
         return false;
     return m_MouseDown[idx];
 }
@@ -158,7 +155,7 @@ bool CSDL3InputManager::IsMouseButtonDown(MouseButton btn) const
 bool CSDL3InputManager::IsMouseButtonPressed(MouseButton btn) const
 {
     int idx = static_cast<int>(btn);
-    if (idx < 0 || idx >= MOUSE_BUTTON_COUNT)
+    if (idx >= MOUSE_BUTTON_COUNT)
         return false;
     return m_MousePressed[idx];
 }
@@ -166,7 +163,7 @@ bool CSDL3InputManager::IsMouseButtonPressed(MouseButton btn) const
 bool CSDL3InputManager::IsMouseButtonReleased(MouseButton btn) const
 {
     int idx = static_cast<int>(btn);
-    if (idx < 0 || idx >= MOUSE_BUTTON_COUNT)
+    if (idx >= MOUSE_BUTTON_COUNT)
         return false;
     return m_MouseReleased[idx];
 }
@@ -184,7 +181,7 @@ void CSDL3InputManager::ResetKeyStates()
 void CSDL3InputManager::UpdateKeyState(KeyCode key, bool bDown)
 {
     int idx = static_cast<int>(key);
-    if (idx < 0 || idx >= KEY_COUNT)
+    if (idx >= KEY_COUNT)
         return;
 
     if (bDown && !m_KeyDown[idx])

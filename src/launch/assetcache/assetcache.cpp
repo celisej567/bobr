@@ -56,7 +56,7 @@ void AssetCache::Destroy()
     }
 }
 
-const modelcache_t& AssetCache::GetModelData( std::string strModelPath )
+const modelcache_t& AssetCache::GetModelData( const std::string &strModelPath )
 {
     if( m_mapCachedModels.contains(strModelPath) )
         return m_mapCachedModels[strModelPath];
@@ -67,7 +67,7 @@ const modelcache_t& AssetCache::GetModelData( std::string strModelPath )
     return GetEmptyModelCache();
 }
 
-const texturecache_t& AssetCache::GetTextureData( std::string strTexturePath )
+const texturecache_t& AssetCache::GetTextureData( const std::string &strTexturePath )
 {
     if( m_mapCachedTextures.contains(strTexturePath) )
         return m_mapCachedTextures[strTexturePath];
@@ -136,7 +136,7 @@ const modelcache_t& AssetCache::BuildModelCache( vertex_t* verts, uint verts_siz
     return m_mapCachedModels[strKey];
 }
 
-bool AssetCache::LoadModelFromDisk(std::string strModelPath)
+bool AssetCache::LoadModelFromDisk(const std::string &strModelPath)
 {
     const std::string MODEL_PATH = strModelPath;
     tinyobj::attrib_t attrib;
@@ -220,7 +220,7 @@ bool AssetCache::LoadModelFromDisk(std::string strModelPath)
 
 }
 
-bool AssetCache::LoadTextureFromDisk(std::string strTexturePath)
+bool AssetCache::LoadTextureFromDisk(const std::string &strTexturePath)
 {
     texturecache_t texcache;
     

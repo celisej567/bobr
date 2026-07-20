@@ -271,7 +271,7 @@ int main(int argc, char **argv)
         {
             g_inputManager->PollEvents();
 
-            if (g_inputManager && g_inputManager->GetExitFlag())
+            if (g_inputManager->GetExitFlag())
                 quit = true;
 
             if (g_inputManager->IsKeyPressed(KeyCode::Escape))
@@ -354,7 +354,7 @@ int main(int argc, char **argv)
     }
 
     if(g_inputManager)
-    g_inputManager->Shutdown();
+        g_inputManager->Shutdown();
 
     AssetCache::Destroy();
 

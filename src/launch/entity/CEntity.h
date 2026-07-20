@@ -38,7 +38,7 @@ public:
 protected:
 
     virtual void SetEntityIndex(uint index) { m_uEntIndex = index; };
-    virtual void SetClassname(std::string classname) { m_strClassname = classname; };
+    virtual void SetClassname(const std::string &classname) { m_strClassname = classname; };
 
 protected:
     float m_flNextThink = 0;
