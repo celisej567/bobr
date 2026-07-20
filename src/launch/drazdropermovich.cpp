@@ -44,7 +44,20 @@
 typedef const char* (*ReturnSomeString_t)();
 typedef IMyLib* (*ReturnMyLib_t)();
 
-glm::mat4 ReverseZPerspective(float fovRadians, float aspect, float nearPlane)
+glm::mat4 ReverseZPerspective(float fovRadians, float aspect, float nearPlane, float farPlane)
+{
+    float tangent = std::tan(fovRadians / 2.0f);
+    glm::mat4 Result(0.0f);
+    Result[0][0] = 1.0f / (aspect * tangent);
+    Result[1][1] = 1.0f / tangent;
+    Result[2][3] = -1.0f;
+    Result[2][2] = nearPlane / (farPlane - nearPlane);
+    Result[3][2] = (nearPlane * farPlane) / (farPlane - nearPlane);
+    return Result;
+}
+
+
+glm::mat4 ReverseZPerspectiveEndless(float fovRadians, float aspect, float nearPlane)
 {
     float tangent = std::tan(fovRadians / 2.0f);
     glm::mat4 Result(0.0f);
@@ -327,7 +340,7 @@ int main(int argc, char **argv)
 		if(g_pActiveCamera)
 				fov = g_pActiveCamera->GetFov();
 
-        projection = ReverseZPerspective(glm::radians(fov), (float)WND_WIDTH / (float)WND_HEIGHT, 0.125);
+        projection = ReverseZPerspective(glm::radians(fov), (float)WND_WIDTH / (float)WND_HEIGHT, 0.125, 100.0f);
 
         ProcessEntitiesFrame();
 
