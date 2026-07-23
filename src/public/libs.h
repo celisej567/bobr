@@ -11,8 +11,19 @@ public:
     virtual void aboba() = 0;
 };
 
+class IModuleBase
+{
+public:
+    virtual ~IModuleBase() = default;
 
-#define INTERFACE_EXPOSE_OBJECT(interf,obj) interf * Get##interf##Interface() { return obj; }
+    virtual bool Initialize() = 0;
+    virtual void Shutdown() = 0;
+    //virtual const char* GetModuleName() = 0;
+};
 
-//for now will use this.
-#define INTERFACE_GET_FUNC_NAME(interf) "Get"#interf"Interface"
+
+IModuleBase* LIB_LoadModule(const std::string &path);
+
+#define LIB_MODULE_EXPORT_FUNC_NAME "GetModuleObject"
+typedef IModuleBase* (*GetModuleFunc_t)();
+#define LIB_EXPOSE_MODULE_OBJECT(moduleobj) IModuleBase* GetModuleObject() {return (IModuleBase*)&moduleobj;};

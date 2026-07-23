@@ -16,7 +16,6 @@ set(SOURCES
     entity/CRotatingModel.cpp
     entity/CGizmos.cpp
     CCameraController.cpp
-    cmd/cmd.cpp
     assetcache/assetcache.cpp
     window/SDL3Window.cpp
 
@@ -46,6 +45,8 @@ if(LINUX)
 #    add_link_options("-lasan")
 endif()
 add_executable(launch)
+
+target_link_libraries(launch PRIVATE important)
 
 # i whould like to remove sdl3 entirely later.
 target_link_libraries(launch PRIVATE SDL3::SDL3)

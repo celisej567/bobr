@@ -8,6 +8,7 @@ set(CMAKE_INSTALL_PREFIX ${BOBR_INSTALL_DIR})
 
 set(CMAKE_BUILD_TYPE Debug)
 
+add_subdirectory( src/important )
 add_subdirectory( src/launch )
 add_subdirectory( src/mylib )
 add_subdirectory( src/inputmanager )

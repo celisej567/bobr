@@ -1,4 +1,5 @@
 #include "SDL3InputManager.hpp"
+#include "libs.h"
 #include <SDL3/SDL_keycode.h>
 #include <SDL3/SDL_scancode.h>
 
@@ -24,10 +25,15 @@ CSDL3InputManager::~CSDL3InputManager()
     CSDL3InputManager::Shutdown();
 }
 
-bool CSDL3InputManager::Initialize(IWindow* hWindow)
+bool CSDL3InputManager::Initialize()
+{
+    return true;
+}
+
+bool CSDL3InputManager::InitializeWindow(IWindow* hWindow)
 {
     m_pWindow = hWindow;
-    return true;
+    return Initialize();
 }
 
 void CSDL3InputManager::Shutdown()
@@ -345,5 +351,5 @@ static CSDL3InputManager g_SDL3InputManager;
 
 extern "C"
 {
-INTERFACE_EXPOSE_OBJECT(IInputManager, &g_SDL3InputManager);
+LIB_EXPOSE_MODULE_OBJECT(g_SDL3InputManager);
 }

@@ -1,4 +1,4 @@
-#include "cmd.h"
+#include "cmd/cmd.h"
 #include <iostream>
 #include <cstring>
 #include "mytypes.h"

@@ -109,39 +109,12 @@ int main(int argc, char **argv)
         }
     }
 
-    {
-        void* mylibdll = 0;
-        mylibdll = dlopen("./libinputmanager.so", RTLD_LAZY);
-        if(mylibdll)
-        {
-            dlerror();
-            CMD::Msg("\n\nInputManager Loaded\n\n");
-            ReturnInputManager_t my_func = (ReturnInputManager_t)dlsym(mylibdll, INTERFACE_GET_FUNC_NAME(IInputManager));
-            const char* err = dlerror();
-            if(err)
-            {
-                CMD::Msg("Error: %s\n", err);
-                dlclose(mylibdll);
-            }
-            else 
-            {
-                g_inputManager = my_func();
-            }
-        }
-        else
-        {
-            CMD::Msg("Error: %s\n", dlerror());
-        
-        }
-    }
-
-
 
     CMD::ProcessArguments(argc, argv);
 
     std::cout << CMD::GetExecutable() << std::endl;
 
-    if( CMD::FindArg("-aboba") )
+    /*if( CMD::FindArg("-aboba") )
         std::cout << "DID Found -aboba" << std::endl;
     else
         std::cout << "DID NOT Found -aboba" << std::endl;
@@ -177,17 +150,23 @@ int main(int argc, char **argv)
         std::cout << "DID Found -double, value stored as double = " << std::setprecision(17) << CMD::GetArgDouble("-double") << std::endl;
     else
         std::cout << "DID NOT Found -double" << std::endl;
-    }
+    }*/
 
-//    SDL_Init(SDL_INIT_VIDEO);
+    g_inputManager = (IInputManager*)LIB_LoadModule("./libinputmanager.so");
+    if(!g_inputManager)
+        CMD::Msg("Unable to load module IInputManager.\n");
+    else
+        CMD::Msg("IInputManager Loaded.\n");
 
+        
 
     SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 32);
     g_pMainWindow = new CSDL3Window();
- //   wnd = SDL_CreateWindow("launch", WND_WIDTH, WND_HEIGHT, SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL);
-    //SDL_Renderer* ren = SDL_CreateRenderer(wnd, NULL);
 
 	g_pMainWindow->SetRelativeMouse(true);
+
+    if(g_inputManager)
+        g_inputManager->InitializeWindow(g_pMainWindow);
     
     SDL_GLContext sdl_gl = SDL_GL_CreateContext((SDL_Window*)(g_pMainWindow->get()));
    
@@ -231,9 +210,6 @@ int main(int argc, char **argv)
 
 	CCamera mainCamera = CCamera();
 	g_pActiveCamera = &mainCamera;
-
-    if(g_inputManager)
-        g_inputManager->Initialize(g_pMainWindow);
 
     CCameraController camController(&mainCamera);
 

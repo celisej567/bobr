@@ -272,13 +272,12 @@ enum class MouseButton : unsigned char {
 //TODO: Move this somewhere else.
 class IWindow;
 
-class IInputManager
+class IInputManager : public IModuleBase
 {
 public:
     virtual ~IInputManager() = default;
 
-    virtual bool Initialize(IWindow* hWindow) = 0;
-    virtual void Shutdown() = 0;
+    virtual bool InitializeWindow(IWindow* hWindow) = 0;
 
     // Must be called once per frame at the start.
     // Processes all pending window/input events and updates internal state.

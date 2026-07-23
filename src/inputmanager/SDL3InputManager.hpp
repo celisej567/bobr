@@ -12,7 +12,8 @@ public:
     CSDL3InputManager();
     ~CSDL3InputManager();
 
-    virtual bool Initialize(IWindow* hWindow) override;
+    virtual bool Initialize() override;
+    virtual bool InitializeWindow(IWindow* hWindow) override;
     virtual void Shutdown() override;
 
     virtual void PollEvents() override;
