@@ -26,4 +26,4 @@ IModuleBase* LIB_LoadModule(const std::string &path);
 
 #define LIB_MODULE_EXPORT_FUNC_NAME "GetModuleObject"
 typedef IModuleBase* (*GetModuleFunc_t)();
-#define LIB_EXPOSE_MODULE_OBJECT(moduleobj) IModuleBase* GetModuleObject() {return (IModuleBase*)&moduleobj;};
+#define LIB_EXPOSE_MODULE_OBJECT(moduleobj) EXPORT IModuleBase* GetModuleObject() {return (IModuleBase*)&moduleobj;};

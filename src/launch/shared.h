@@ -5,6 +5,7 @@
 #include "entity/CEntity.h"
 #include "mytypes.h"
 #include "window/Window.hpp"
+#include "platform.h"
 
 const glm::vec3 g_WorldUp = glm::vec3(0,1,0);
 

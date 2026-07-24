@@ -10,7 +10,7 @@
         #define PLATFORM_BSD 1
     #endif
 
-#elifdef defined(WIN64)
+#elifdef WIN32
     #define PLATFORM_WINDOWS 1
 #else
 #error "Platform not implemented."
