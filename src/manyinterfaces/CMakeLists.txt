@@ -20,7 +20,7 @@ if(LINUX)
 #    add_link_options("-lasan")
 endif()
 
-add_library(important STATIC)
+add_library(manyinterfaces STATIC)
 
-target_sources(important PRIVATE ${SOURCES})
-target_include_directories(important BEFORE PRIVATE ${INCLUDE_DIRS})
+target_sources(manyinterfaces PRIVATE ${SOURCES})
+target_include_directories(manyinterfaces BEFORE PRIVATE ${INCLUDE_DIRS})

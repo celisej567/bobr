@@ -39,6 +39,7 @@
 #include "shared.h"
 
 #include "libs.h"
+#include "manyinterfaces.h"
 
 typedef const char* (*ReturnSomeString_t)();
 typedef IMyLib* (*ReturnMyLib_t)();
@@ -118,11 +119,11 @@ int main(int argc, char **argv)
 
     //TODO: make paths platform-independed
 #ifdef PLATFORM_WINDOWS
-    g_inputManager = (IInputManager*)LIB_LoadModule("./inputmanager.dll");
+    g_InputManager = (IInputManager*)LIB_LoadModule("./inputmanager.dll");
 #elifdef PLATFORM_POSIX
-    g_inputManager = (IInputManager*)LIB_LoadModule("./libinputmanager.so");
+    g_InputManager = (IInputManager*)LIB_LoadModule("./libinputmanager.so");
 #endif
-    if(!g_inputManager)
+    if(!g_InputManager)
         CMD::Msg("Unable to load module IInputManager.\n");
     else
         CMD::Msg("IInputManager Loaded.\n");
@@ -133,8 +134,8 @@ int main(int argc, char **argv)
 
 	g_pMainWindow->SetRelativeMouse(true);
 
-    if(g_inputManager)
-        g_inputManager->InitializeWindow(g_pMainWindow);
+    if(g_InputManager)
+        g_InputManager->InitializeWindow(g_pMainWindow);
     
     SDL_GLContext sdl_gl = SDL_GL_CreateContext((SDL_Window*)(g_pMainWindow->get()));
    
@@ -224,19 +225,19 @@ int main(int argc, char **argv)
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
 
-        if(g_inputManager)
+        if(g_InputManager)
         {
-            g_inputManager->PollEvents();
+            g_InputManager->PollEvents();
 
-            if (g_inputManager->GetExitFlag())
+            if (g_InputManager->GetExitFlag())
                 quit = true;
 
-            if (g_inputManager->IsKeyPressed(KeyCode::Escape))
+            if (g_InputManager->IsKeyPressed(KeyCode::Escape))
             {
                 g_pMainWindow->ToggleRelativeMouse();
             }
 
-            if (g_inputManager->IsKeyPressed(KeyCode::J))
+            if (g_InputManager->IsKeyPressed(KeyCode::J))
             {
                 if(ent2)
                 {
@@ -257,7 +258,7 @@ int main(int argc, char **argv)
         ProcessEntitiesTick();
 
         // camera controller — keyboard always, mouse only when relative mode is on
-        camController.Update(g_inputManager, deltaTime, g_pMainWindow->GetRelativeMouse());
+        camController.Update(g_InputManager, deltaTime, g_pMainWindow->GetRelativeMouse());
 
         glViewport(0,0,WND_WIDTH,WND_HEIGHT);
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
@@ -310,8 +311,8 @@ int main(int argc, char **argv)
 
     }
 
-    if(g_inputManager)
-        g_inputManager->Shutdown();
+    if(g_InputManager)
+        g_InputManager->Shutdown();
 
     AssetCache::Destroy();
 

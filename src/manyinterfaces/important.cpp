@@ -1,5 +1,6 @@
 #include "cbase.h"
 
+#include "manyinterfaces.h"
 #include "libs.h"
 #include "cmd/cmd.h"
 
@@ -10,6 +11,7 @@
 #include <windows.h>
 #endif
 
+IInputManager* g_InputManager = 0;
 
 IModuleBase* LIB_LoadModule(const std::string &path)
 {

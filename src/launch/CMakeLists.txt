@@ -46,7 +46,7 @@ if(LINUX)
 endif()
 add_executable(launch)
 
-target_link_libraries(launch PRIVATE important)
+target_link_libraries(launch PRIVATE manyinterfaces)
 
 # i whould like to remove sdl3 entirely later.
 target_link_libraries(launch PRIVATE SDL3::SDL3)

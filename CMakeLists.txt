@@ -16,7 +16,7 @@ if(MSVC)
     add_compile_options(/MP12)
 endif()
 
-add_subdirectory( src/important )
+add_subdirectory( src/manyinterfaces )
 add_subdirectory( src/launch )
 if(LINUX)
 	add_subdirectory( src/mylib )

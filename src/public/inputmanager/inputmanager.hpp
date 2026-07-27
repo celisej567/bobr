@@ -1,5 +1,5 @@
 #pragma once
-#include "libs.h"
+#include "../libs.h"
 
 enum KeyCode : unsigned int {
     Unknown = 0,
@@ -302,7 +302,5 @@ public:
 
     virtual bool GetExitFlag() const = 0;
 };
-
-inline IInputManager* g_inputManager;
 
 typedef IInputManager* (*ReturnInputManager_t)();
