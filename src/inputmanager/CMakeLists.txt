@@ -35,7 +35,9 @@ target_link_libraries(inputmanager PRIVATE SDL3::SDL3)
 target_sources(inputmanager PRIVATE ${SOURCES})
 target_include_directories(inputmanager BEFORE PRIVATE ${INCLUDE_DIRS})
 
-install(TARGETS inputmanager RUNTIME DESTINATION .)
+install(TARGETS inputmanager 
+        LIBRARY DESTINATION .
+        RUNTIME DESTINATION .)
 
 if(WIN32)
     install(FILES $<TARGET_PDB_FILE:inputmanager> DESTINATION . OPTIONAL)

@@ -31,7 +31,6 @@
 
 #include "cmd/cmd.h"
 
-#include "iomanip"
 #include "dbg.h"
 #include "window/SDL3Window.hpp"
 #include "inputmanager/inputmanager.hpp"
@@ -71,6 +70,10 @@ glm::mat4 ReverseZPerspectiveEndless(float fovRadians, float aspect, float nearP
 
 int main(int argc, char **argv)
 {
+    SDL_Init(SDL_INIT_VIDEO);
+
+    SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
+
     puts("bebra\n");
     ConMsg("new bebra %s\n", "aboba");
     CMD::Msg("new CMD bebra %s\n", "aboba");
@@ -123,22 +126,22 @@ int main(int argc, char **argv)
 #elifdef PLATFORM_POSIX
     g_InputManager = (IInputManager*)LIB_LoadModule("./libinputmanager.so");
 #endif
+
     if(!g_InputManager)
         CMD::Msg("Unable to load module IInputManager.\n");
     else
         CMD::Msg("IInputManager Loaded.\n");
-        
 
-    SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 32);
     g_pMainWindow = new CSDL3Window();
-
+    
 	g_pMainWindow->SetRelativeMouse(true);
-
+    
     if(g_InputManager)
         g_InputManager->InitializeWindow(g_pMainWindow);
-    
+
+
     SDL_GLContext sdl_gl = SDL_GL_CreateContext((SDL_Window*)(g_pMainWindow->get()));
-   
+
 
     if (!gladLoadGLLoader((GLADloadproc)SDL_GL_GetProcAddress))
     {
@@ -162,6 +165,11 @@ int main(int argc, char **argv)
     glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &nrAttributes);
     std::cout << "Maximum nr of vertex attributes supported: " << nrAttributes << std::endl;
 
+    int depthBits, stencilBits;
+    SDL_GL_GetAttribute(SDL_GL_DEPTH_SIZE, &depthBits);
+    SDL_GL_GetAttribute(SDL_GL_STENCIL_SIZE, &stencilBits);
+    printf("Depth: %d, Stencil: %d\n", depthBits, stencilBits);
+
     stbi_set_flip_vertically_on_load(true);
 
     CTexture texture1("textures/container.jpg", GL_RGB);
@@ -182,6 +190,8 @@ int main(int argc, char **argv)
 
     CCameraController camController(&mainCamera);
 
+    camController.SetMoveSpeed(5, 100);
+
     CModel ObjModel("models/box.obj");
 
     CEntity* ent = (CEntity*)CreateEntity("base_entity");
@@ -201,6 +211,14 @@ int main(int argc, char **argv)
     ent3->SetModelName("models/box.obj");
     ent3->SetTextureName("textures/awesomeface.png", GL_RGBA);
     SpawnEntity(ent3);
+
+
+    CModelEntity* terr = (CModelEntity*)CreateEntity("model_entity");
+    terr->SetAbsPos({0,-10,0});
+    terr->SetModelName("models/terr.obj");
+    terr->SetTextureName("textures/container.jpg", GL_RGB);
+    terr->SetScale(100,100,100);
+    SpawnEntity(terr);
 
     //glm::mat4 projection = glm::perspective(glm::radians(fov), (float)WND_WIDTH / (float)WND_HEIGHT, 0.1f, 100.0f);	
 
@@ -239,10 +257,13 @@ int main(int argc, char **argv)
 
             if (g_InputManager->IsKeyPressed(KeyCode::J))
             {
-                if(ent2)
+                if(ent2 || terr)
                 {
                     DeleteEntity(ent2);
                     ent2 = 0;
+
+                    DeleteEntity(terr);
+                    terr = 0;
                 }
                 else
                 {
@@ -251,6 +272,13 @@ int main(int argc, char **argv)
                     ent2->SetModelName("models/box.obj");
                     ent2->SetTextureName("textures/container.jpg", GL_RGB);
                     SpawnEntity(ent2);
+
+                    terr = (CModelEntity*)CreateEntity("model_entity");
+                    terr->SetAbsPos({0,-10,0});
+                    terr->SetModelName("models/terr.obj");
+                    terr->SetTextureName("textures/container.jpg", GL_RGB);
+                    terr->SetScale(100,100,100);
+                    SpawnEntity(terr);
                 }
             }
         }
@@ -285,7 +313,8 @@ int main(int argc, char **argv)
 		if(g_pActiveCamera)
 				fov = g_pActiveCamera->GetFov();
 
-        projection = ReverseZPerspective(glm::radians(fov), (float)WND_WIDTH / (float)WND_HEIGHT, 0.125, 100.0f);
+        //projection = ReverseZPerspective(glm::radians(fov), (float)WND_WIDTH / (float)WND_HEIGHT, 0.125, 100.0f);
+        projection = ReverseZPerspectiveEndless(glm::radians(fov), (float)WND_WIDTH / (float)WND_HEIGHT, 0.125);
 
         ProcessEntitiesFrame();
 

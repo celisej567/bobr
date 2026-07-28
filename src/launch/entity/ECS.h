@@ -138,7 +138,7 @@ inline IEntity* CreateEntity(const std::string &classname)
 inline void SpawnEntity(IEntity* pEntity)
 {
     if(!pEntity || pEntity->GetEntityIndex() == ENTITY_INVALID_INDEX)
-        std::abort();
+        return;
 
     pEntity->Enable();
     pEntity->Spawn();

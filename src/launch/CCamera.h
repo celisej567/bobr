@@ -22,8 +22,8 @@ public:
         if(m_flFov > 179)
 			m_flFov = 179;
 
-		if(m_flFov < 1)
-			m_flFov = 1;
+		if(m_flFov < 0.001f)
+			m_flFov = 0.001f;
     }
 
     virtual glm::vec3 GetPosition() const { return m_Position; }
