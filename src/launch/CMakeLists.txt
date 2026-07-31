@@ -19,6 +19,9 @@ set(SOURCES
     assetcache/assetcache.cpp
     window/SDL3Window.cpp
 
+
+    filesystem/basicfilesystem.cpp
+
     ${PROJECT_SOURCE_DIR}/thirdparty/glad/src/glad.c
 )
 

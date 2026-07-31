@@ -11,7 +11,8 @@
 #include <windows.h>
 #endif
 
-IInputManager* g_InputManager = 0;
+IInputManager* g_pInputManager = 0;
+IFileSystem* g_pFileSystem = 0;
 
 IModuleBase* LIB_LoadModule(const std::string &path)
 {

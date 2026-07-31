@@ -301,6 +301,9 @@ public:
     virtual float GetScrollDelta() const = 0;
 
     virtual bool GetExitFlag() const = 0;
+
+    virtual const char* GetModuleBaseName() override final {return "IInputManager";};
+    virtual const char* GetModuleName() override {return "IInputManager";};
 };
 
 typedef IInputManager* (*ReturnInputManager_t)();

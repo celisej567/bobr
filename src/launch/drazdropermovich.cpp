@@ -40,6 +40,9 @@
 #include "libs.h"
 #include "manyinterfaces.h"
 
+
+#include "filesystem/basicfilesystem.h"
+
 typedef const char* (*ReturnSomeString_t)();
 typedef IMyLib* (*ReturnMyLib_t)();
 
@@ -124,20 +127,23 @@ int main(int argc, char **argv)
 #ifdef PLATFORM_WINDOWS
     g_InputManager = (IInputManager*)LIB_LoadModule("./inputmanager.dll");
 #elifdef PLATFORM_POSIX
-    g_InputManager = (IInputManager*)LIB_LoadModule("./libinputmanager.so");
+    g_pInputManager = (IInputManager*)LIB_LoadModule("./libinputmanager.so");
 #endif
+    g_pFileSystem = new CBasicFileSystem();
 
-    if(!g_InputManager)
+    if(!g_pInputManager)
         CMD::Msg("Unable to load module IInputManager.\n");
     else
-        CMD::Msg("IInputManager Loaded.\n");
+        CMD::Msg("\n%s Loaded.\nImplemented by: %s.\n\n", g_pInputManager->GetModuleBaseName(), g_pInputManager->GetModuleName());
+
+    CMD::Msg("\n%s\n\n", (g_pFileSystem->ReadFile("./fs_read_test.txt")).c_str());
 
     g_pMainWindow = new CSDL3Window();
     
 	g_pMainWindow->SetRelativeMouse(true);
     
-    if(g_InputManager)
-        g_InputManager->InitializeWindow(g_pMainWindow);
+    if(g_pInputManager)
+        g_pInputManager->InitializeWindow(g_pMainWindow);
 
 
     SDL_GLContext sdl_gl = SDL_GL_CreateContext((SDL_Window*)(g_pMainWindow->get()));
@@ -243,19 +249,19 @@ int main(int argc, char **argv)
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
 
-        if(g_InputManager)
+        if(g_pInputManager)
         {
-            g_InputManager->PollEvents();
+            g_pInputManager->PollEvents();
 
-            if (g_InputManager->GetExitFlag())
+            if (g_pInputManager->GetExitFlag())
                 quit = true;
 
-            if (g_InputManager->IsKeyPressed(KeyCode::Escape))
+            if (g_pInputManager->IsKeyPressed(KeyCode::Escape))
             {
                 g_pMainWindow->ToggleRelativeMouse();
             }
 
-            if (g_InputManager->IsKeyPressed(KeyCode::J))
+            if (g_pInputManager->IsKeyPressed(KeyCode::J))
             {
                 if(ent2 || terr)
                 {
@@ -286,7 +292,7 @@ int main(int argc, char **argv)
         ProcessEntitiesTick();
 
         // camera controller — keyboard always, mouse only when relative mode is on
-        camController.Update(g_InputManager, deltaTime, g_pMainWindow->GetRelativeMouse());
+        camController.Update(g_pInputManager, deltaTime, g_pMainWindow->GetRelativeMouse());
 
         glViewport(0,0,WND_WIDTH,WND_HEIGHT);
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
@@ -313,7 +319,7 @@ int main(int argc, char **argv)
 		if(g_pActiveCamera)
 				fov = g_pActiveCamera->GetFov();
 
-        //projection = ReverseZPerspective(glm::radians(fov), (float)WND_WIDTH / (float)WND_HEIGHT, 0.125, 100.0f);
+        //projection = ReverseZPerspective(glm::radians(fov), (float)WND_WIDTH / (float)WND_HEIGHT, 0.25f, 1000.0f);
         projection = ReverseZPerspectiveEndless(glm::radians(fov), (float)WND_WIDTH / (float)WND_HEIGHT, 0.125);
 
         ProcessEntitiesFrame();
@@ -340,8 +346,8 @@ int main(int argc, char **argv)
 
     }
 
-    if(g_InputManager)
-        g_InputManager->Shutdown();
+    if(g_pInputManager)
+        g_pInputManager->Shutdown();
 
     AssetCache::Destroy();
 

@@ -12,6 +12,8 @@ public:
     CSDL3InputManager();
     ~CSDL3InputManager();
 
+    virtual const char* GetModuleName() override {return "CSDL3InputManager";};
+
     virtual bool Initialize() override;
     virtual bool InitializeWindow(IWindow* hWindow) override;
     virtual void Shutdown() override;

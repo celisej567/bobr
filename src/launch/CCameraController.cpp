@@ -76,11 +76,12 @@ void CCameraController::ProcessMouseInput(IInputManager* pInput)
         return;
 
     glm::vec3 angles = m_pCamera->GetAngles();
+    float fov = m_pCamera->GetFov();
 
     if (bMouseMoved)
     {
-        angles[1] += xoffset;
-        angles[0] += yoffset;
+        angles[1] += xoffset * (fov / 100);
+        angles[0] += yoffset * (fov / 100);
 
         if (angles[0] > 89.0f)
             angles[0] = 89.0f;
@@ -90,8 +91,7 @@ void CCameraController::ProcessMouseInput(IInputManager* pInput)
 
     if (bScrolled)
     {
-        float fov = m_pCamera->GetFov();
-        fov += scrollDelta;
+        fov += scrollDelta * (fov / 10);
         m_pCamera->SetFov(fov);
     }
 
