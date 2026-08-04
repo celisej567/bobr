@@ -14,7 +14,7 @@ set(SOURCES
     entity/ECS.cpp
     entity/CModelEntity.cpp
     entity/CRotatingModel.cpp
-    entity/CGizmos.cpp
+    entity/CAxis.cpp
     CCameraController.cpp
     assetcache/assetcache.cpp
     window/SDL3Window.cpp

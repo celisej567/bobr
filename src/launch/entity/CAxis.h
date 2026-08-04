@@ -2,11 +2,11 @@
 #include "mytypes.h"
 #include "CEntity.h"
 
-class CGizmos : public CEntity
+class CAxis : public CEntity
 {
 public:
-    CGizmos();
-    ~CGizmos();
+    CAxis();
+    ~CAxis();
     virtual bool IsVisible() { return m_bVisible; };
     virtual void SetVisible(bool bEnable) { m_bVisible = bEnable; };
 

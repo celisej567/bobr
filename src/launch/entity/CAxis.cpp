@@ -1,5 +1,5 @@
 #include "shared.h"
-#include "CGizmos.h"
+#include "CAxis.h"
 #include "CModel.h"
 #include "CShader.h"
 #include "glm.hpp"
@@ -12,9 +12,9 @@ vertex_t LineVertexPos[] =
     {1,0,0,1,1,1,0,0},
 };
 
-LINK_CLASSNAME_TO_ENTITY(gizmos,CGizmos);
+LINK_CLASSNAME_TO_ENTITY(axis,CAxis);
 
-CGizmos::CGizmos()
+CAxis::CAxis()
 {
     uint VBO; 
     glGenVertexArrays(1, &VAO);
@@ -38,12 +38,12 @@ CGizmos::CGizmos()
     glBindVertexArray(0);
 }
 
-CGizmos::~CGizmos()
+CAxis::~CAxis()
 {
 
 }
 
-void CGizmos::Frame()
+void CAxis::Frame()
 {
     
     g_ShaderIDMap["color"]->Use();

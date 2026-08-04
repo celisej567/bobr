@@ -203,8 +203,8 @@ int main(int argc, char **argv)
     CEntity* ent = (CEntity*)CreateEntity("base_entity");
     SpawnEntity(ent);
 
-    CEntity* gizmos = (CEntity*)CreateEntity("gizmos");
-    SpawnEntity(gizmos);
+    CEntity* pAxis = (CEntity*)CreateEntity("axis");
+    SpawnEntity(pAxis);
 
     CModelEntity* ent2 = (CModelEntity*)CreateEntity("model_entity");
     ent2->SetAbsPos({0,10,0});
