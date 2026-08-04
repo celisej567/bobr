@@ -1,6 +1,8 @@
 #pragma once
 
 #include "string"
+#include <cstdarg>
+#include <cstring>
 
 #if defined(__gnu_linux__) || defined(BSD)
     #define PLATFORM_POSIX 1
@@ -71,4 +73,53 @@ inline std::string FixSlashesStdRet(const std::string& pname, char separator = C
     std::string result = pname;
     FixSlashesStd(result, separator);
     return result;
+}
+
+inline std::string Vars(const char* str, ...)
+{
+    char formattedMessage[4096];
+    va_list args; 
+	va_start( args, str );
+    vsnprintf(formattedMessage, 4096, str, args);
+	va_end( args );
+
+    return std::string(formattedMessage);
+}
+
+inline void ToLower(std::string& str)
+{
+    for (char &c : str) {
+        c = static_cast<char>(std::tolower(static_cast<unsigned char>(c)));
+    };
+}
+
+inline std::string ToLowerRet(const std::string& str)
+{
+    std::string newstr = str;
+    for (char &c : newstr) {
+        c = static_cast<char>(std::tolower(static_cast<unsigned char>(c)));
+    };
+
+    return newstr;
+}
+
+inline void ToLower(char* str)
+{
+    uint len = strlen(str);
+    for (uint i = 0; i < len; i++)
+    {
+        str[i] = std::tolower(str[i]);
+    };
+}
+
+inline const char* ToLowerRet(const char* str)
+{
+    uint len = strlen(str);
+    char* formattedMessage = new char[len];
+    for (uint i = 0; i < len; i++)
+    {
+        formattedMessage[i] = std::tolower(str[i]);
+    };
+
+    return formattedMessage;
 }

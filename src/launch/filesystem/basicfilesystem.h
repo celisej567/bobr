@@ -27,6 +27,7 @@ public:
 
     virtual const char* GetModuleName() override {return "CBasicFileSystem";};
 
+    virtual void SetBasePath(const std::string & strBasePath, const std::string & strPath) override;
     virtual void ClearBasePaths() override;
     virtual std::string ReadFile(const std::string &strFilePath) override;
 
