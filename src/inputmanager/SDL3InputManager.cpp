@@ -2,18 +2,7 @@
 #include "libs.h"
 #include <SDL3/SDL_keycode.h>
 #include <SDL3/SDL_scancode.h>
-
-//TODO: Remove this
-class IWindow
-{
-public:
-    virtual ~IWindow() = default;
-    
-    virtual void* get() = 0;
-    virtual void SetRelativeMouse(bool bEnabled) = 0;
-    virtual bool GetRelativeMouse() = 0;
-    virtual void ToggleRelativeMouse() = 0;
-};
+#include "Window.hpp"
 
 CSDL3InputManager::CSDL3InputManager()
 {

@@ -1,5 +1,6 @@
 #pragma once
 #include "../libs.h"
+#include "Window.hpp"
 
 enum KeyCode : unsigned int {
     Unknown = 0,
@@ -268,9 +269,6 @@ enum class MouseButton : unsigned char {
     X2,
     Count
 };
-
-//TODO: Move this somewhere else.
-class IWindow;
 
 class IInputManager : public IModuleBase
 {
