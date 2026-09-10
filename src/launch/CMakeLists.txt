@@ -55,6 +55,17 @@ target_link_libraries(launch PRIVATE manyinterfaces)
 target_link_libraries(launch PRIVATE SDL3::SDL3)
 #target_link_libraries(launch PRIVATE OpenGL::GL)
 
+
+if(BOBR_TRACY_PROFILE)
+    list(APPEND SOURCES ${PROJECT_SOURCE_DIR}/thirdparty/tracy/TracyClient.cpp)
+    list(APPEND INCLUDE_DIRS ${PROJECT_SOURCE_DIR}/thirdparty/tracy)
+    target_compile_definitions(launch PRIVATE PROFILER_ENABLED)
+
+    #specifically for tracy. maybe later ill use different profiler
+    target_compile_definitions(launch PRIVATE TRACY_ENABLE)
+endif()
+
+
 target_sources(launch PRIVATE ${SOURCES})
 target_include_directories(launch BEFORE PRIVATE ${INCLUDE_DIRS})
 

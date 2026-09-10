@@ -1,3 +1,4 @@
+#include "profiler.hpp"
 #include "shared.h"
 #include "ECS.h"
 
@@ -24,6 +25,7 @@ void ProcessEntitiesTick()
 
 void ProcessEntitiesFrame()
 {
+    PROFILER_SCOPE_NAME("ProcessEntitiesFrame");
     for( auto EntityPair : ExistingEntities() )
     {
         IEntity* pEntity = EntityPair.second;

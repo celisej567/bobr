@@ -43,6 +43,9 @@
 
 #include "filesystem/basicfilesystem.h"
 
+#include "profiler.hpp"
+
+
 typedef const char* (*ReturnSomeString_t)();
 typedef IMyLib* (*ReturnMyLib_t)();
 
@@ -343,6 +346,7 @@ int main(int argc, char **argv)
         //TODO move to window class
         SDL_GL_SwapWindow((SDL_Window*)g_pMainWindow->get());
         glFinish();
+        PROFILER_FRAME_UPDATE();
 
     }
 

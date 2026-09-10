@@ -12,6 +12,12 @@ set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 set(CMAKE_C_VISIBILITY_PRESET hidden)
 set(CMAKE_VISIBILITY_INLINES_HIDDEN ON)
 
+option(BOBR_TRACY_PROFILE "Build with Tracy profiler integration (optional)" OFF)
+
+if(BOBR_TRACY_PROFILE)
+    message("Tracy enabled!")
+endif()
+
 if(MSVC)
     add_compile_options(/MP12)
 endif()
