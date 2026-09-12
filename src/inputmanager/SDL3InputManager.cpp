@@ -120,23 +120,23 @@ void CSDL3InputManager::PollEvents()
 
 bool CSDL3InputManager::IsKeyDown(KeyCode key) const
 {
-    if (key >= KEY_COUNT)
+    if ((uint)key >= KEY_COUNT)
         return false;
-    return m_KeyDown[key];
+    return m_KeyDown[(uint)key];
 }
 
 bool CSDL3InputManager::IsKeyPressed(KeyCode key) const
 {
-    if (key >= KEY_COUNT)
+    if ((uint)key >= KEY_COUNT)
         return false;
-    return m_KeyPressed[key];
+    return m_KeyPressed[(uint)key];
 }
 
 bool CSDL3InputManager::IsKeyReleased(KeyCode key) const
 {
-    if (key >= KEY_COUNT)
+    if ((uint)key >= KEY_COUNT)
         return false;
-    return m_KeyReleased[key];
+    return m_KeyReleased[(uint)key];
 }
 
 bool CSDL3InputManager::IsMouseButtonDown(MouseButton btn) const

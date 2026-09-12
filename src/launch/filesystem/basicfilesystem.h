@@ -5,7 +5,6 @@
 #include "libs.h"
 #include "filesystem/filesystem.h"
 #include <cstdio>
-#include <linux/limits.h>
 #include <string>
 #include <unordered_map>
 #include "cmd/cmd.h"

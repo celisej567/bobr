@@ -128,7 +128,7 @@ int main(int argc, char **argv)
 
     //TODO: make paths platform-independed
 #ifdef PLATFORM_WINDOWS
-    g_InputManager = (IInputManager*)LIB_LoadModule("./inputmanager.dll");
+    g_pInputManager = (IInputManager*)LIB_LoadModule("./inputmanager.dll");
 #elifdef PLATFORM_POSIX
     g_pInputManager = (IInputManager*)LIB_LoadModule("./libinputmanager.so");
 #endif

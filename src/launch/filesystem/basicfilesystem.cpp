@@ -2,7 +2,6 @@
 #include "libs.h"
 #include "filesystem/filesystem.h"
 #include <cstdio>
-#include <linux/limits.h>
 #include <string>
 #include <unordered_map>
 #include "cmd/cmd.h"
@@ -18,7 +17,7 @@ CBasicFileSystem::CBasicFileSystem()
     ClearBasePaths();
 
     // should always be there
-    m_mapBasePaths["root"] = std::filesystem::current_path();
+    m_mapBasePaths["root"] = std::filesystem::current_path().string();
 }
 
 CBasicFileSystem::~CBasicFileSystem()

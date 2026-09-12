@@ -3,6 +3,7 @@
 #include "string"
 #include <cstdarg>
 #include <cstring>
+#include "mytypes.h"
 
 #if defined(__gnu_linux__) || defined(BSD)
     #define PLATFORM_POSIX 1

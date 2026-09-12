@@ -2,7 +2,7 @@
 #include "../libs.h"
 #include "Window.hpp"
 
-enum KeyCode : unsigned int {
+enum class KeyCode : unsigned int {
     Unknown = 0,
     Return,
     Escape,
