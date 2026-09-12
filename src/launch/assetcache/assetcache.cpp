@@ -155,14 +155,22 @@ bool AssetCache::LoadModelFromDisk(const std::string &strModelPath)
         return false;
     }
 
+    // reserve at least something to safe performance.
+    size_t totalIndices = 0;
+    for (const auto& shape : shapes)
+        totalIndices += shape.mesh.indices.size();
+
     modelcache_t mdlcache;
 
+    // rewrite this plz
+    // later i need to make binary format for models instead of all this crap.
     {
         PROFILER_SCOPE_NAME("CompareVerts");
 
 
         // firstly we need to fill up verts and index vectors
-        std::unordered_map<vertex_t, uint> uniqueVertices {};
+        std::unordered_map<vertex_t, uint> uniqueVertices;
+        uniqueVertices.reserve(totalIndices);
         for (const auto& shape : shapes) {
             for (const auto& index : shape.mesh.indices) {
                 vertex_t vertex;
@@ -202,28 +210,28 @@ bool AssetCache::LoadModelFromDisk(const std::string &strModelPath)
     
         // now we need to make VBO
         // TODO(celisej): i think its better to move this somewhere else
-        
+
         glGenVertexArrays(1, &(m_mapCachedModels[strModelPath].VAO));
         glGenBuffers(1, &(m_mapCachedModels[strModelPath].VBO));
         glGenBuffers(1, &(m_mapCachedModels[strModelPath].EBO));
-        
+
         glBindVertexArray(m_mapCachedModels[strModelPath].VAO);
-        
+
         glBindBuffer(GL_ARRAY_BUFFER, m_mapCachedModels[strModelPath].VBO);
         glBufferData(GL_ARRAY_BUFFER, sizeof(vertex_t) * m_mapCachedModels[strModelPath].m_vecVerts.size(), m_mapCachedModels[strModelPath].m_vecVerts.data(), GL_STATIC_DRAW);
-        
+
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_mapCachedModels[strModelPath].EBO);
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint) * m_mapCachedModels[strModelPath].m_vecIndexes.size(), m_mapCachedModels[strModelPath].m_vecIndexes.data(), GL_STATIC_DRAW);
-        
+
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
         glEnableVertexAttribArray(0);
-        
+
         glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3*sizeof(float)));
         glEnableVertexAttribArray(1);
-        
+
         glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
         glEnableVertexAttribArray(2);
-        
+
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         glBindVertexArray(0);
     }

@@ -59,9 +59,6 @@ target_link_libraries(launch PRIVATE SDL3::SDL3)
 if(BOBR_TRACY_PROFILE)
     list(APPEND SOURCES ${PROJECT_SOURCE_DIR}/thirdparty/tracy/TracyClient.cpp)
     list(APPEND INCLUDE_DIRS ${PROJECT_SOURCE_DIR}/thirdparty/tracy)
-    target_compile_definitions(launch PRIVATE PROFILER_ENABLED)
-
-    #specifically for tracy. maybe later ill use different profiler
     target_compile_definitions(launch PRIVATE TRACY_ENABLE)
 endif()
 

@@ -7,7 +7,7 @@
     #define PROFILER_SCOPE_NAME(name) ZoneScopedN(name)
 
     #define PROFILER_SCOPE_TEXT( txt, size ) ZoneText( txt, size )
-    #define PROFILER_SCOPE_TEXT_F( fmt, ... ) ZoneTextF( fmt, ... )
+    #define PROFILER_SCOPE_TEXT_F( fmt, ... ) ZoneTextF( fmt, ##__VA_ARGS__ )
 
     #define PROFILER_FRAME_UPDATE() FrameMark
     #define PROFILER_FRAME_START(name) FrameMarkStart(name) 
