@@ -1,4 +1,5 @@
 #pragma once
+#include "ext/vector_float3.hpp"
 #include "shared.h"
 #include "CEntity.h"
 #include "CTexture.h"
@@ -12,8 +13,9 @@ public:
     CModelEntity();
     ~CModelEntity();
 
-    void SetModelName(std::string filename);
-    void SetTextureName(std::string filename, GLenum textureType);
+    void SetModelName(const std::string &filename);
+    void SetTextureName(const std::string &filename, GLenum textureType);
+    void SetScale(float fX, float fY, float fZ);
 
     virtual void Think();
 
@@ -28,6 +30,8 @@ protected:
 
 private:
     CModel m_Model;
+
+    glm::vec3 m_vecScale;
 
     CTexture m_Texture;
 };

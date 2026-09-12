@@ -1,7 +1,7 @@
 #pragma once
 
 #include "ICamera.h"
-#include "inputmanager/InputManager.hpp"
+#include "inputmanager/inputmanager.hpp"
 #include "glm.hpp"
 
 class CCameraController

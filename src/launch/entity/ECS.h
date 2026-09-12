@@ -18,7 +18,7 @@ typedef std::map<uint, IEntity*> ExistingEntityMap_t;
 template <class T>
 class CEntityClassnameBuilder;
 
-inline IEntity* CreateEntity(std::string classname);
+inline IEntity* CreateEntity(const std::string &classname);
 inline void SpawnEntity(IEntity* pEntity);
 inline void DeleteEntity(IEntity* pEntity);
 void ProcessEntitiesTick();
@@ -47,7 +47,7 @@ inline ClassnameMap_t& EntityClassnameMap()
 class IEntity
 {
 public:
-
+    virtual ~IEntity() = default;
     virtual void Spawn() = 0;
     virtual void Tick() = 0;
     virtual void Think() = 0;
@@ -78,10 +78,10 @@ public:
 protected:
 
     virtual void SetEntityIndex(uint index) = 0;
-    virtual void SetClassname(std::string classname) = 0;
+    virtual void SetClassname(const std::string &classname) = 0;
 
 public:
-    friend IEntity* CreateEntity(std::string classname);
+    friend IEntity* CreateEntity(const std::string &classname);
     friend void SpawnEntity(IEntity* pEntity);
     friend void DeleteEntity(IEntity* pEntity);
 };
@@ -109,7 +109,7 @@ public:
 // TODO (celisej): Make it so entities can be created using costructor
 //                  and will be properly handled that way as well
 //                  without calling this function
-inline IEntity* CreateEntity(std::string classname)
+inline IEntity* CreateEntity(const std::string &classname)
 {
     if(!EntityClassnameMap().contains(classname))
     {
@@ -138,7 +138,7 @@ inline IEntity* CreateEntity(std::string classname)
 inline void SpawnEntity(IEntity* pEntity)
 {
     if(!pEntity || pEntity->GetEntityIndex() == ENTITY_INVALID_INDEX)
-        std::abort();
+        return;
 
     pEntity->Enable();
     pEntity->Spawn();

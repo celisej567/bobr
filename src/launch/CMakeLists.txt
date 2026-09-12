@@ -14,12 +14,13 @@ set(SOURCES
     entity/ECS.cpp
     entity/CModelEntity.cpp
     entity/CRotatingModel.cpp
-    entity/CGizmos.cpp
+    entity/CAxis.cpp
     CCameraController.cpp
-    cmd/cmd.cpp
     assetcache/assetcache.cpp
     window/SDL3Window.cpp
-    inputmanager/SDL3InputManager.cpp
+
+
+    filesystem/basicfilesystem.cpp
 
     ${PROJECT_SOURCE_DIR}/thirdparty/glad/src/glad.c
 )
@@ -48,9 +49,19 @@ if(LINUX)
 endif()
 add_executable(launch)
 
+target_link_libraries(launch PRIVATE manyinterfaces)
+
 # i whould like to remove sdl3 entirely later.
 target_link_libraries(launch PRIVATE SDL3::SDL3)
 #target_link_libraries(launch PRIVATE OpenGL::GL)
+
+
+if(BOBR_TRACY_PROFILE)
+    list(APPEND SOURCES ${PROJECT_SOURCE_DIR}/thirdparty/tracy/TracyClient.cpp)
+    list(APPEND INCLUDE_DIRS ${PROJECT_SOURCE_DIR}/thirdparty/tracy)
+    target_compile_definitions(launch PRIVATE TRACY_ENABLE)
+endif()
+
 
 target_sources(launch PRIVATE ${SOURCES})
 target_include_directories(launch BEFORE PRIVATE ${INCLUDE_DIRS})

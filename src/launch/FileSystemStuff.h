@@ -8,6 +8,6 @@
 #include "vector"
 #include "mytypes.h"
 
-std::string GetFileString(std::string str);
+std::string GetFileString(const std::string &str);
 
-std::vector<std::string> MySplitString(std::string buff);
+std::vector<std::string> MySplitString(const std::string &buff);

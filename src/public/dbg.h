@@ -3,9 +3,6 @@
 #include "string"
 #include <cstdarg>
 
-// TODO: move whole cmd.h to somewhere shared and make it work.
-#include "cmd/cmd.h"
-
 inline void ConMsg(std::string str, ...)
 {
     char formattedMessage[2048];

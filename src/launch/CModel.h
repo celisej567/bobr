@@ -20,7 +20,7 @@ public:
     // fill data with already existing arrays.
     CModel( vertex_t* verts, uint verts_size, uint* indexes, uint indexes_size );
 
-    void ProcessFile( std::string filename );
+    void ProcessFile( const std::string &filename );
 
     void ProcessData( vertex_t* verts, uint verts_size, uint* indexes, uint indexes_size );
 

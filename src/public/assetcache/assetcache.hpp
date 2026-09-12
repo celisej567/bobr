@@ -8,8 +8,8 @@
 class AssetCache
 {
 public:
-    static const modelcache_t& GetModelData( std::string strModelPath );
-    static const texturecache_t& GetTextureData( std::string strTexturePath );
+    static const modelcache_t& GetModelData( const std::string &strModelPath );
+    static const texturecache_t& GetTextureData( const std::string &strTexturePath );
 
     static const modelcache_t& BuildModelCache( vertex_t* verts, uint verts_size, uint* indexes, uint indexes_size );
 
@@ -22,6 +22,6 @@ private:
     static const modelcache_t s_EmptyModelCache;   
     static const texturecache_t s_EmptyTextureCache;   
 
-    static bool LoadModelFromDisk(std::string strModelPath);
-    static bool LoadTextureFromDisk(std::string strTexturePath);
+    static bool LoadModelFromDisk(const std::string &strModelPath);
+    static bool LoadTextureFromDisk(const std::string &strTexturePath);
 };

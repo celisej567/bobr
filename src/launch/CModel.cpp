@@ -15,7 +15,7 @@ CModel::CModel( vertex_t* verts, uint verts_size, uint* indexes, uint indexes_si
     ProcessData(verts, verts_size, indexes, indexes_size);
 }
 
-void CModel::ProcessFile( std::string filename )
+void CModel::ProcessFile( const std::string &filename )
 {
     m_ModelCache = &AssetCache::GetModelData(filename);
 }

@@ -31,15 +31,55 @@
 
 #include "cmd/cmd.h"
 
-#include "iomanip"
 #include "dbg.h"
 #include "window/SDL3Window.hpp"
-#include "inputmanager/SDL3InputManager.hpp"
+#include "inputmanager/inputmanager.hpp"
 
 #include "shared.h"
 
+#include "libs.h"
+#include "manyinterfaces.h"
+
+
+#include "filesystem/basicfilesystem.h"
+
+#include "profiler.hpp"
+
+
+typedef const char* (*ReturnSomeString_t)();
+typedef IMyLib* (*ReturnMyLib_t)();
+
+glm::mat4 ReverseZPerspective(float fovRadians, float aspect, float nearPlane, float farPlane)
+{
+    float tangent = std::tan(fovRadians / 2.0f);
+    glm::mat4 Result(0.0f);
+    Result[0][0] = 1.0f / (aspect * tangent);
+    Result[1][1] = 1.0f / tangent;
+    Result[2][3] = -1.0f;
+    Result[2][2] = nearPlane / (farPlane - nearPlane);
+    Result[3][2] = (nearPlane * farPlane) / (farPlane - nearPlane);
+    return Result;
+}
+
+
+glm::mat4 ReverseZPerspectiveEndless(float fovRadians, float aspect, float nearPlane)
+{
+    float tangent = std::tan(fovRadians / 2.0f);
+    glm::mat4 Result(0.0f);
+    Result[0][0] = 1.0f / (aspect * tangent);
+    Result[1][1] = 1.0f / tangent;
+    Result[2][3] = -1.0f;
+    Result[2][2] = 0.0f;
+    Result[3][2] = nearPlane;
+    return Result;
+}
+
 int main(int argc, char **argv)
 {
+    SDL_Init(SDL_INIT_VIDEO);
+
+    SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
+
     puts("bebra\n");
     ConMsg("new bebra %s\n", "aboba");
     CMD::Msg("new CMD bebra %s\n", "aboba");
@@ -48,7 +88,7 @@ int main(int argc, char **argv)
 
     std::cout << CMD::GetExecutable() << std::endl;
 
-    if( CMD::FindArg("-aboba") )
+    /*if( CMD::FindArg("-aboba") )
         std::cout << "DID Found -aboba" << std::endl;
     else
         std::cout << "DID NOT Found -aboba" << std::endl;
@@ -84,19 +124,33 @@ int main(int argc, char **argv)
         std::cout << "DID Found -double, value stored as double = " << std::setprecision(17) << CMD::GetArgDouble("-double") << std::endl;
     else
         std::cout << "DID NOT Found -double" << std::endl;
-    }
+    }*/
 
-//    SDL_Init(SDL_INIT_VIDEO);
+    //TODO: make paths platform-independed
+#ifdef PLATFORM_WINDOWS
+    g_pInputManager = (IInputManager*)LIB_LoadModule("./inputmanager.dll");
+#elifdef PLATFORM_POSIX
+    g_pInputManager = (IInputManager*)LIB_LoadModule("./libinputmanager.so");
+#endif
+    g_pFileSystem = new CBasicFileSystem();
 
+    if(!g_pInputManager)
+        CMD::Msg("Unable to load module IInputManager.\n");
+    else
+        CMD::Msg("\n%s Loaded.\nImplemented by: %s.\n\n", g_pInputManager->GetModuleBaseName(), g_pInputManager->GetModuleName());
+
+    CMD::Msg("\n%s\n\n", (g_pFileSystem->ReadFile("./fs_read_test.txt")).c_str());
 
     g_pMainWindow = new CSDL3Window();
- //   wnd = SDL_CreateWindow("launch", WND_WIDTH, WND_HEIGHT, SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL);
-    //SDL_Renderer* ren = SDL_CreateRenderer(wnd, NULL);
-
+    
 	g_pMainWindow->SetRelativeMouse(true);
     
+    if(g_pInputManager)
+        g_pInputManager->InitializeWindow(g_pMainWindow);
+
+
     SDL_GLContext sdl_gl = SDL_GL_CreateContext((SDL_Window*)(g_pMainWindow->get()));
-   
+
 
     if (!gladLoadGLLoader((GLADloadproc)SDL_GL_GetProcAddress))
     {
@@ -112,11 +166,18 @@ int main(int argc, char **argv)
 
     glViewport(0,0,WND_WIDTH,WND_HEIGHT);
 
-	glEnable(GL_DEPTH_TEST);
+    glEnable(GL_DEPTH_TEST);
+    glClipControl(GL_LOWER_LEFT, GL_ZERO_TO_ONE);
+    glDepthFunc(GL_GREATER);
 
     int nrAttributes;
     glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &nrAttributes);
     std::cout << "Maximum nr of vertex attributes supported: " << nrAttributes << std::endl;
+
+    int depthBits, stencilBits;
+    SDL_GL_GetAttribute(SDL_GL_DEPTH_SIZE, &depthBits);
+    SDL_GL_GetAttribute(SDL_GL_STENCIL_SIZE, &stencilBits);
+    printf("Depth: %d, Stencil: %d\n", depthBits, stencilBits);
 
     stbi_set_flip_vertically_on_load(true);
 
@@ -136,18 +197,17 @@ int main(int argc, char **argv)
 	CCamera mainCamera = CCamera();
 	g_pActiveCamera = &mainCamera;
 
-    CSDL3InputManager inputManager;
-    inputManager.Initialize(g_pMainWindow);
-
     CCameraController camController(&mainCamera);
+
+    camController.SetMoveSpeed(5, 100);
 
     CModel ObjModel("models/box.obj");
 
     CEntity* ent = (CEntity*)CreateEntity("base_entity");
     SpawnEntity(ent);
 
-    CEntity* gizmos = (CEntity*)CreateEntity("gizmos");
-    SpawnEntity(gizmos);
+    CEntity* pAxis = (CEntity*)CreateEntity("axis");
+    SpawnEntity(pAxis);
 
     CModelEntity* ent2 = (CModelEntity*)CreateEntity("model_entity");
     ent2->SetAbsPos({0,10,0});
@@ -160,6 +220,14 @@ int main(int argc, char **argv)
     ent3->SetModelName("models/box.obj");
     ent3->SetTextureName("textures/awesomeface.png", GL_RGBA);
     SpawnEntity(ent3);
+
+
+    CModelEntity* terr = (CModelEntity*)CreateEntity("model_entity");
+    terr->SetAbsPos({0,-10,0});
+    terr->SetModelName("models/terr.obj");
+    terr->SetTextureName("textures/container.jpg", GL_RGB);
+    terr->SetScale(100,100,100);
+    SpawnEntity(terr);
 
     //glm::mat4 projection = glm::perspective(glm::radians(fov), (float)WND_WIDTH / (float)WND_HEIGHT, 0.1f, 100.0f);	
 
@@ -184,41 +252,54 @@ int main(int argc, char **argv)
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
 
-        inputManager.PollEvents();
-
-        if (inputManager.GetExitFlag())
-            quit = true;
-
-        if (inputManager.IsKeyPressed(KeyCode::Escape))
+        if(g_pInputManager)
         {
-            g_pMainWindow->ToggleRelativeMouse();
-        }
+            g_pInputManager->PollEvents();
 
-        if (inputManager.IsKeyPressed(KeyCode::J))
-        {
-            if(ent2)
+            if (g_pInputManager->GetExitFlag())
+                quit = true;
+
+            if (g_pInputManager->IsKeyPressed(KeyCode::Escape))
             {
-                DeleteEntity(ent2);
-                ent2 = 0;
+                g_pMainWindow->ToggleRelativeMouse();
             }
-            else
+
+            if (g_pInputManager->IsKeyPressed(KeyCode::J))
             {
-                ent2 = (CModelEntity*)CreateEntity("model_entity");
-                ent2->SetAbsPos({0,10,0});
-                ent2->SetModelName("models/box.obj");
-                ent2->SetTextureName("textures/container.jpg", GL_RGB);
-                SpawnEntity(ent2);
+                if(ent2 || terr)
+                {
+                    DeleteEntity(ent2);
+                    ent2 = 0;
+
+                    DeleteEntity(terr);
+                    terr = 0;
+                }
+                else
+                {
+                    ent2 = (CModelEntity*)CreateEntity("model_entity");
+                    ent2->SetAbsPos({0,10,0});
+                    ent2->SetModelName("models/box.obj");
+                    ent2->SetTextureName("textures/container.jpg", GL_RGB);
+                    SpawnEntity(ent2);
+
+                    terr = (CModelEntity*)CreateEntity("model_entity");
+                    terr->SetAbsPos({0,-10,0});
+                    terr->SetModelName("models/terr.obj");
+                    terr->SetTextureName("textures/container.jpg", GL_RGB);
+                    terr->SetScale(100,100,100);
+                    SpawnEntity(terr);
+                }
             }
         }
 
         ProcessEntitiesTick();
 
         // camera controller — keyboard always, mouse only when relative mode is on
-        camController.Update(&inputManager, deltaTime, g_pMainWindow->GetRelativeMouse());
+        camController.Update(g_pInputManager, deltaTime, g_pMainWindow->GetRelativeMouse());
 
         glViewport(0,0,WND_WIDTH,WND_HEIGHT);
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-        glClearDepth(1);
+        glClearDepth(0.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		const float radius = 10.0f;
@@ -241,7 +322,8 @@ int main(int argc, char **argv)
 		if(g_pActiveCamera)
 				fov = g_pActiveCamera->GetFov();
 
-        projection = glm::perspective(glm::radians(fov), (float)WND_WIDTH / (float)WND_HEIGHT, 0.1f, 100.0f);
+        //projection = ReverseZPerspective(glm::radians(fov), (float)WND_WIDTH / (float)WND_HEIGHT, 0.25f, 1000.0f);
+        projection = ReverseZPerspectiveEndless(glm::radians(fov), (float)WND_WIDTH / (float)WND_HEIGHT, 0.125);
 
         ProcessEntitiesFrame();
 
@@ -264,10 +346,12 @@ int main(int argc, char **argv)
         //TODO move to window class
         SDL_GL_SwapWindow((SDL_Window*)g_pMainWindow->get());
         glFinish();
+        PROFILER_FRAME_UPDATE();
 
     }
 
-    inputManager.Shutdown();
+    if(g_pInputManager)
+        g_pInputManager->Shutdown();
 
     AssetCache::Destroy();
 

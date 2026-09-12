@@ -1,5 +1,6 @@
 #include "assetcache/assetcache.hpp"
 #include "modelcache.hpp"
+#include "profiler.hpp"
 #include "texturecache.hpp"
 #include "mytypes.h"
 
@@ -56,7 +57,7 @@ void AssetCache::Destroy()
     }
 }
 
-const modelcache_t& AssetCache::GetModelData( std::string strModelPath )
+const modelcache_t& AssetCache::GetModelData( const std::string &strModelPath )
 {
     if( m_mapCachedModels.contains(strModelPath) )
         return m_mapCachedModels[strModelPath];
@@ -67,7 +68,7 @@ const modelcache_t& AssetCache::GetModelData( std::string strModelPath )
     return GetEmptyModelCache();
 }
 
-const texturecache_t& AssetCache::GetTextureData( std::string strTexturePath )
+const texturecache_t& AssetCache::GetTextureData( const std::string &strTexturePath )
 {
     if( m_mapCachedTextures.contains(strTexturePath) )
         return m_mapCachedTextures[strTexturePath];
@@ -136,8 +137,11 @@ const modelcache_t& AssetCache::BuildModelCache( vertex_t* verts, uint verts_siz
     return m_mapCachedModels[strKey];
 }
 
-bool AssetCache::LoadModelFromDisk(std::string strModelPath)
+bool AssetCache::LoadModelFromDisk(const std::string &strModelPath)
 {
+    PROFILER_SCOPE_NAME("LoadModelFromDisk")
+    PROFILER_SCOPE_TEXT(strModelPath.data(), strModelPath.length());
+
     const std::string MODEL_PATH = strModelPath;
     tinyobj::attrib_t attrib;
     std::vector<tinyobj::shape_t> shapes;
@@ -151,35 +155,48 @@ bool AssetCache::LoadModelFromDisk(std::string strModelPath)
         return false;
     }
 
+    // reserve at least something to safe performance.
+    size_t totalIndices = 0;
+    for (const auto& shape : shapes)
+        totalIndices += shape.mesh.indices.size();
+
     modelcache_t mdlcache;
 
-    // firstly we need to fill up verts and index vectors
-    std::unordered_map<vertex_t, uint> uniqueVertices {};
-    for (const auto& shape : shapes) {
-        for (const auto& index : shape.mesh.indices) {
-            vertex_t vertex;
+    // rewrite this plz
+    // later i need to make binary format for models instead of all this crap.
+    {
+        PROFILER_SCOPE_NAME("CompareVerts");
 
-            if (index.vertex_index >= 0) {
-                vertex.x = attrib.vertices[(3 * index.vertex_index) + 0];
-                vertex.y = attrib.vertices[(3 * index.vertex_index) + 2];
-                vertex.z = attrib.vertices[(3 * index.vertex_index) + 1];
-            }
 
-            if (index.texcoord_index >= 0) {
-                vertex.u = attrib.texcoords[(2 * index.texcoord_index) + 0];
-                vertex.v = 1.0f - attrib.texcoords[(2 * index.texcoord_index) + 1];
-            } else {
-                vertex.u = (vertex.x * 0.5f) + 0.5f;
-                vertex.v = (vertex.z * 0.5f) + 0.5f;
-            }
+        // firstly we need to fill up verts and index vectors
+        std::unordered_map<vertex_t, uint> uniqueVertices;
+        uniqueVertices.reserve(totalIndices);
+        for (const auto& shape : shapes) {
+            for (const auto& index : shape.mesh.indices) {
+                vertex_t vertex;
 
-            
-            if (!uniqueVertices.contains(vertex)) {
-                uniqueVertices[vertex] = (mdlcache.m_vecVerts.size());
-                mdlcache.m_vecVerts.push_back(vertex);
+                if (index.vertex_index >= 0) {
+                    vertex.x = attrib.vertices[(3 * index.vertex_index) + 0];
+                    vertex.y = attrib.vertices[(3 * index.vertex_index) + 2];
+                    vertex.z = attrib.vertices[(3 * index.vertex_index) + 1];
+                }
+
+                if (index.texcoord_index >= 0) {
+                    vertex.u = attrib.texcoords[(2 * index.texcoord_index) + 0];
+                    vertex.v = 1.0f - attrib.texcoords[(2 * index.texcoord_index) + 1];
+                } else {
+                    vertex.u = (vertex.x * 0.5f) + 0.5f;
+                    vertex.v = (vertex.z * 0.5f) + 0.5f;
+                }
+
+
+                if (!uniqueVertices.contains(vertex)) {
+                    uniqueVertices[vertex] = (mdlcache.m_vecVerts.size());
+                    mdlcache.m_vecVerts.push_back(vertex);
+                }
+
+                mdlcache.m_vecIndexes.push_back(uniqueVertices[vertex]);
             }
-            
-            mdlcache.m_vecIndexes.push_back(uniqueVertices[vertex]);
         }
     }
     
@@ -188,40 +205,46 @@ bool AssetCache::LoadModelFromDisk(std::string strModelPath)
 
     m_mapCachedModels[strModelPath] = mdlcache;
 
-    // now we need to make VBO
-    // TODO(celisej): i think its better to move this somewhere else
-
-    glGenVertexArrays(1, &(m_mapCachedModels[strModelPath].VAO));
-    glGenBuffers(1, &(m_mapCachedModels[strModelPath].VBO));
-    glGenBuffers(1, &(m_mapCachedModels[strModelPath].EBO));
-
-    glBindVertexArray(m_mapCachedModels[strModelPath].VAO);
-
-    glBindBuffer(GL_ARRAY_BUFFER, m_mapCachedModels[strModelPath].VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertex_t) * m_mapCachedModels[strModelPath].m_vecVerts.size(), m_mapCachedModels[strModelPath].m_vecVerts.data(), GL_STATIC_DRAW);
-
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_mapCachedModels[strModelPath].EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint) * m_mapCachedModels[strModelPath].m_vecIndexes.size(), m_mapCachedModels[strModelPath].m_vecIndexes.data(), GL_STATIC_DRAW);
-
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3*sizeof(float)));
-    glEnableVertexAttribArray(1);
-
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
-    glEnableVertexAttribArray(2);
-
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindVertexArray(0);
+    {
+        PROFILER_SCOPE_NAME("Bind Buffers");
     
+        // now we need to make VBO
+        // TODO(celisej): i think its better to move this somewhere else
+
+        glGenVertexArrays(1, &(m_mapCachedModels[strModelPath].VAO));
+        glGenBuffers(1, &(m_mapCachedModels[strModelPath].VBO));
+        glGenBuffers(1, &(m_mapCachedModels[strModelPath].EBO));
+
+        glBindVertexArray(m_mapCachedModels[strModelPath].VAO);
+
+        glBindBuffer(GL_ARRAY_BUFFER, m_mapCachedModels[strModelPath].VBO);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(vertex_t) * m_mapCachedModels[strModelPath].m_vecVerts.size(), m_mapCachedModels[strModelPath].m_vecVerts.data(), GL_STATIC_DRAW);
+
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_mapCachedModels[strModelPath].EBO);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint) * m_mapCachedModels[strModelPath].m_vecIndexes.size(), m_mapCachedModels[strModelPath].m_vecIndexes.data(), GL_STATIC_DRAW);
+
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+        glEnableVertexAttribArray(0);
+
+        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3*sizeof(float)));
+        glEnableVertexAttribArray(1);
+
+        glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+        glEnableVertexAttribArray(2);
+
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        glBindVertexArray(0);
+    }
     
     return true;
 
 }
 
-bool AssetCache::LoadTextureFromDisk(std::string strTexturePath)
+bool AssetCache::LoadTextureFromDisk(const std::string &strTexturePath)
 {
+    PROFILER_SCOPE_NAME("LoadTextureFromDisk")
+    PROFILER_SCOPE_TEXT(strTexturePath.data(), strTexturePath.length());
+    
     texturecache_t texcache;
     
     int nrChannels;

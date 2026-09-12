@@ -1,3 +1,4 @@
+#include "ext/matrix_transform.hpp"
 #include "modelcache.hpp"
 #include "shared.h"
 #include "CShader.h"
@@ -9,7 +10,7 @@ LINK_CLASSNAME_TO_ENTITY(model_entity, CModelEntity);
 
 CModelEntity::CModelEntity()
 {
-    
+    m_vecScale = {1,1,1};
 }
 
 CModelEntity::~CModelEntity()
@@ -22,14 +23,19 @@ void CModelEntity::Think()
     BaseClass::Think();
 }
 
-void CModelEntity::SetModelName( std::string filename )
+void CModelEntity::SetModelName( const std::string &filename )
 {
     m_Model.ProcessFile(filename);
 }
 
-void CModelEntity::SetTextureName( std::string filename, GLenum textureType )
+void CModelEntity::SetTextureName( const std::string &filename, GLenum textureType )
 {
     m_Texture.ProcessFile(filename.data(), textureType);
+}
+
+void CModelEntity::SetScale(float fX, float fY, float fZ)
+{
+    m_vecScale = {fX,fY,fZ};
 }
 
 void CModelEntity::Frame()
@@ -49,6 +55,8 @@ void CModelEntity::Frame()
     model = glm::rotate(model, glm::radians(GetAbsRot()[0]), glm::vec3(1.0f, 0.0f, 0.0f));
     model = glm::rotate(model, glm::radians(GetAbsRot()[1]), glm::vec3(0.0f, 1.0f, 0.0f));
     model = glm::rotate(model, glm::radians(GetAbsRot()[2]), glm::vec3(0.0f, 0.0f, 1.0f));
+
+    model = glm::scale(model, m_vecScale);
 
     GLfloat* model_p = glm::value_ptr(model);
     GLfloat* view_p = glm::value_ptr(view);
