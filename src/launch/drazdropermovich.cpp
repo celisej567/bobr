@@ -186,10 +186,6 @@ int main(int argc, char **argv)
 
     CompileAllShaders();
 
-    CShader shader1("shaders/default.frag","shaders/default.vert");
-    shader1.Use();
-    shader1.SetUniformInt("texture2", 1);
-
 	float deltaTime = 0.0f;	// Time between current frame and last frame
 	float lastFrame = 0.0f; // Time of last frame
 
@@ -311,11 +307,6 @@ int main(int argc, char **argv)
 
 		if(g_pActiveCamera)
 			view = g_pActiveCamera->GetViewMatrix();
-
-        shader1.Use();
-        shader1.SetUniformVec4("OffsetShit", 0,0,0,1);
-
-        shader1.SetUniformFloat("mixAmount", sinf(time) * 0.5f + 0.5f);
 
 
 		float fov = 45;

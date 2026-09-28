@@ -15,6 +15,10 @@ struct vertex_t
 	float u = 0;
 	float v = 0;
 
+	float nx = 0;
+	float ny = 0;
+	float nz = 0;
+
     bool operator==(const vertex_t& other) const {
         return x == other.x && 
                y == other.y && 
@@ -23,7 +27,11 @@ struct vertex_t
                g == other.g && 
                b == other.b && 
                u == other.u &&
-               v == other.v;
+               v == other.v &&
+               nx == other.nx &&
+               ny == other.ny &&
+               nz == other.nz
+               ;
     }
 
 };

@@ -3,6 +3,7 @@
 #include "string"
 #include <cstdarg>
 #include <cstring>
+#include <vector>
 #include "mytypes.h"
 
 #if defined(__gnu_linux__) || defined(BSD)
@@ -76,6 +77,19 @@ inline std::string FixSlashesStdRet(const std::string& pname, char separator = C
     return result;
 }
 
+inline std::string VarsStd(const std::string& str, ...)
+{
+    char formattedMessage[4096];
+    va_list args;
+
+    //there might be warning about variadic parameter
+	va_start( args, (str.data()) );
+    vsnprintf(formattedMessage, 4096, str.data(), args);
+	va_end( args );
+
+    return std::string(formattedMessage);
+}
+
 inline std::string Vars(const char* str, ...)
 {
     char formattedMessage[4096];
@@ -123,4 +137,65 @@ inline const char* ToLowerRet(const char* str)
     };
 
     return formattedMessage;
+}
+
+//TODO: std-less variant
+inline std::vector<std::string> SplitStd(const std::string& str, char separator) 
+{
+    std::vector<std::string> strs;
+    
+    size_t start = 0;
+    size_t end = str.find(separator);
+
+    while (end != std::string::npos) {
+        
+        strs.push_back(str.substr(start, end - start));
+        
+        start = end + 1;
+        end = str.find(separator, start);
+    }
+    
+    strs.push_back(str.substr(start));
+
+    return strs;
+}
+
+
+inline std::string RemoveLastStd(const std::string& str, char separator)
+{
+    size_t pos = str.rfind(separator);
+
+    if (pos == std::string::npos) {
+        return str;
+    }
+
+    return str.substr(0, pos);
+}
+
+inline char* RemoveLast(const char* str, char separator) 
+{
+    if (str == NULL) {
+        return NULL;
+    }
+
+    const char* last_sep = strrchr(str, separator);
+
+    size_t new_len;
+
+    if (last_sep == NULL)
+        new_len = strlen(str);
+    else
+        new_len = last_sep - str;
+
+    char* new_str = (char*)malloc(new_len + 1);
+    if (new_str == NULL) {
+        return NULL;
+    }
+
+    strncpy(new_str, str, new_len);
+    
+
+    new_str[new_len] = '\0';
+
+    return new_str;
 }

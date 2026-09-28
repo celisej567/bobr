@@ -65,6 +65,7 @@ void CModelEntity::Frame()
     g_ShaderIDMap["default_new"]->SetUniformMat4("model", model_p);
     g_ShaderIDMap["default_new"]->SetUniformMat4("view", view_p);
     g_ShaderIDMap["default_new"]->SetUniformMat4("proj", projection_p);
+    g_ShaderIDMap["default_new"]->SetUniformVec3("lightPos", g_pActiveCamera->GetPosition()[0], g_pActiveCamera->GetPosition()[1], g_pActiveCamera->GetPosition()[2]);
 
     glDrawElements(GL_TRIANGLES, m_Model.GetIndexesCount(), GL_UNSIGNED_INT, 0);
 }

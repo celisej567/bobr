@@ -119,14 +119,17 @@ const modelcache_t& AssetCache::BuildModelCache( vertex_t* verts, uint verts_siz
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mdlcache.EBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint) * mdlcache.m_vecIndexes.size(), mdlcache.m_vecIndexes.data(), GL_STATIC_DRAW);
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(vertex_t), (void*)offsetof(vertex_t, x));
     glEnableVertexAttribArray(0);
 
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3*sizeof(float)));
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(vertex_t), (void*)offsetof(vertex_t, r));
     glEnableVertexAttribArray(1);
 
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(vertex_t), (void*)offsetof(vertex_t, u));
     glEnableVertexAttribArray(2);
+
+    glVertexAttribPointer(3, 3, GL_FLOAT, GL_TRUE, sizeof(vertex_t), (void*)offsetof(vertex_t, nx));
+    glEnableVertexAttribArray(3);
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
@@ -181,6 +184,12 @@ bool AssetCache::LoadModelFromDisk(const std::string &strModelPath)
                     vertex.z = attrib.vertices[(3 * index.vertex_index) + 1];
                 }
 
+                if (index.normal_index >= 0) {
+                    vertex.nx = attrib.normals[(3 * index.normal_index) + 0];
+                    vertex.ny = attrib.normals[(3 * index.normal_index) + 2];
+                    vertex.nz = attrib.normals[(3 * index.normal_index) + 1];
+                }
+
                 if (index.texcoord_index >= 0) {
                     vertex.u = attrib.texcoords[(2 * index.texcoord_index) + 0];
                     vertex.v = 1.0f - attrib.texcoords[(2 * index.texcoord_index) + 1];
@@ -188,7 +197,6 @@ bool AssetCache::LoadModelFromDisk(const std::string &strModelPath)
                     vertex.u = (vertex.x * 0.5f) + 0.5f;
                     vertex.v = (vertex.z * 0.5f) + 0.5f;
                 }
-
 
                 if (!uniqueVertices.contains(vertex)) {
                     uniqueVertices[vertex] = (mdlcache.m_vecVerts.size());
@@ -223,14 +231,17 @@ bool AssetCache::LoadModelFromDisk(const std::string &strModelPath)
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_mapCachedModels[strModelPath].EBO);
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint) * m_mapCachedModels[strModelPath].m_vecIndexes.size(), m_mapCachedModels[strModelPath].m_vecIndexes.data(), GL_STATIC_DRAW);
 
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(vertex_t), (void*)offsetof(vertex_t, x));
         glEnableVertexAttribArray(0);
 
-        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3*sizeof(float)));
+        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(vertex_t), (void*)offsetof(vertex_t, r));
         glEnableVertexAttribArray(1);
 
-        glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+        glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(vertex_t), (void*)offsetof(vertex_t, u));
         glEnableVertexAttribArray(2);
+
+        glVertexAttribPointer(3, 3, GL_FLOAT, GL_TRUE, sizeof(vertex_t), (void*)offsetof(vertex_t, nx));
+        glEnableVertexAttribArray(3);
 
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         glBindVertexArray(0);
