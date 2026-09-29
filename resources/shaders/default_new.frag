@@ -1,6 +1,15 @@
 #version 330 core
 out vec4 FragColor;
 
+struct Material {
+    vec3 ambient;
+    vec3 diffuse;
+    vec3 specular;
+    float shininess;
+}; 
+  
+uniform Material material;
+
 in vec4 vertexColor;
 in vec2 TexCoord;
 in vec3 Normal;
@@ -19,17 +28,15 @@ void main()
 
     vec3 viewDir = normalize(cameraPos - FragPos);
     vec3 reflectDir = reflect(-lightDir, normal);  
-    float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32);
+    float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
 
-    float diffuse = max(dot(normal, lightDir), 0.0);
+    float diff = max(dot(normal, lightDir), 0.0);
+    vec3 diffuse =  material.diffuse * diff;
 
-    // wont be so dark
-    float ambient = 0.15;
-
-    float specular = specularStrength * spec;  
-    float lighting = ambient + diffuse + specular;
+    vec3 specular = material.specular * spec;  
+    vec3 lighting = material.ambient + diffuse + specular;
 
     vec4 texColor = texture(ourTexture, TexCoord);
 
-    FragColor = texColor * vertexColor * lighting;
+    FragColor = texColor * vertexColor * vec4(lighting,1);
 }

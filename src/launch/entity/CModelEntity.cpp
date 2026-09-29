@@ -67,5 +67,10 @@ void CModelEntity::Frame()
     g_ShaderIDMap["default_new"]->SetUniformMat4("proj", projection_p);
     g_ShaderIDMap["default_new"]->SetUniformVec3("lightPos", g_pActiveCamera->GetPosition()[0], g_pActiveCamera->GetPosition()[1], g_pActiveCamera->GetPosition()[2]);
 
+    g_ShaderIDMap["default_new"]->SetUniformVec3("material.ambient", 0.15, 0.15, 0.15);
+    g_ShaderIDMap["default_new"]->SetUniformVec3("material.diffuse", 1.0f, 1, 1);
+    g_ShaderIDMap["default_new"]->SetUniformVec3("material.specular", 0.5f, 0.5f, 0.5f);
+    g_ShaderIDMap["default_new"]->SetUniformFloat("material.shininess", 32.0f);
+
     glDrawElements(GL_TRIANGLES, m_Model.GetIndexesCount(), GL_UNSIGNED_INT, 0);
 }
