@@ -142,9 +142,9 @@ int main(int argc, char **argv)
     CMD::Msg("\n%s\n\n", (g_pFileSystem->ReadFile("./fs_read_test.txt")).c_str());
 
     g_pMainWindow = new CSDL3Window();
-    
+
 	g_pMainWindow->SetRelativeMouse(true);
-    
+
     if(g_pInputManager)
         g_pInputManager->InitializeWindow(g_pMainWindow);
 
@@ -181,9 +181,6 @@ int main(int argc, char **argv)
 
     stbi_set_flip_vertically_on_load(true);
 
-    CTexture texture1("textures/container.jpg", GL_RGB);
-    CTexture texture2("textures/awesomeface.png", GL_RGBA);
-
     CompileAllShaders();
 
 	float deltaTime = 0.0f;	// Time between current frame and last frame
@@ -208,7 +205,8 @@ int main(int argc, char **argv)
     CModelEntity* ent2 = (CModelEntity*)CreateEntity("model_entity");
     ent2->SetAbsPos({0,10,0});
     ent2->SetModelName("models/box.obj");
-    ent2->SetTextureName("textures/container.jpg", GL_RGB);
+    ent2->SetTextureName("textures/container.png", GL_RGB);
+    ent2->SetTextureSpecName("textures/container_specular.png", GL_RGB);
     SpawnEntity(ent2);
 
     CModelEntity* ent3 = (CModelEntity*)CreateEntity("rotating_model");
@@ -221,11 +219,12 @@ int main(int argc, char **argv)
     CModelEntity* terr = (CModelEntity*)CreateEntity("model_entity");
     terr->SetAbsPos({0,-10,0});
     terr->SetModelName("models/terr.obj");
-    terr->SetTextureName("textures/container.jpg", GL_RGB);
+    terr->SetTextureName("textures/container.png", GL_RGB);
+    terr->SetTextureSpecName("textures/container_specular.png", GL_RGB);
     terr->SetScale(100,100,100);
     SpawnEntity(terr);
 
-    //glm::mat4 projection = glm::perspective(glm::radians(fov), (float)WND_WIDTH / (float)WND_HEIGHT, 0.1f, 100.0f);	
+    //glm::mat4 projection = glm::perspective(glm::radians(fov), (float)WND_WIDTH / (float)WND_HEIGHT, 0.1f, 100.0f);
 
     //temp
     struct FPSTimer
@@ -275,13 +274,15 @@ int main(int argc, char **argv)
                     ent2 = (CModelEntity*)CreateEntity("model_entity");
                     ent2->SetAbsPos({0,10,0});
                     ent2->SetModelName("models/box.obj");
-                    ent2->SetTextureName("textures/container.jpg", GL_RGB);
+                    ent2->SetTextureName("textures/container.png", GL_RGB);
+                    ent2->SetTextureSpecName("textures/container_specular.png", GL_RGB);
                     SpawnEntity(ent2);
 
                     terr = (CModelEntity*)CreateEntity("model_entity");
                     terr->SetAbsPos({0,-10,0});
                     terr->SetModelName("models/terr.obj");
-                    terr->SetTextureName("textures/container.jpg", GL_RGB);
+                    terr->SetTextureName("textures/container.png", GL_RGB);
+                    terr->SetTextureSpecName("textures/container_specular.png", GL_RGB);
                     terr->SetScale(100,100,100);
                     SpawnEntity(terr);
                 }
@@ -302,7 +303,7 @@ int main(int argc, char **argv)
 		float camX = sin(time) * radius;
 		float camZ = cos(time) * radius;
 		view = glm::mat4(1);
-		//view = glm::lookAt(glm::vec3(camX, 0.0, camZ), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f)); 
+		//view = glm::lookAt(glm::vec3(camX, 0.0, camZ), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 		//view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
 
 		if(g_pActiveCamera)
@@ -357,6 +358,6 @@ int main(int argc, char **argv)
     g_pMainWindow = NULL;
 
     puts("bebra2\n");
-    
+
     return 0;
 }

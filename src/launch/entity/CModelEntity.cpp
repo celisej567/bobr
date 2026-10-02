@@ -33,6 +33,11 @@ void CModelEntity::SetTextureName( const std::string &filename, GLenum textureTy
     m_Texture.ProcessFile(filename.data(), textureType);
 }
 
+void CModelEntity::SetTextureSpecName( const std::string &filename, GLenum textureType )
+{
+    m_SpecTexture.ProcessFile(filename.data(), textureType);
+}
+
 void CModelEntity::SetScale(float fX, float fY, float fZ)
 {
     m_vecScale = {fX,fY,fZ};
@@ -68,9 +73,14 @@ void CModelEntity::Frame()
     g_ShaderIDMap["default_new"]->SetUniformVec3("lightPos", g_pActiveCamera->GetPosition()[0], g_pActiveCamera->GetPosition()[1], g_pActiveCamera->GetPosition()[2]);
 
     g_ShaderIDMap["default_new"]->SetUniformVec3("material.ambient", 0.15, 0.15, 0.15);
-    g_ShaderIDMap["default_new"]->SetUniformVec3("material.diffuse", 1.0f, 1, 1);
-    g_ShaderIDMap["default_new"]->SetUniformVec3("material.specular", 0.5f, 0.5f, 0.5f);
     g_ShaderIDMap["default_new"]->SetUniformFloat("material.shininess", 32.0f);
+    g_ShaderIDMap["default_new"]->SetUniformInt("material.diffuse", 0);
+
+    g_ShaderIDMap["default_new"]->SetUniformBool("material.useSpecular", m_SpecTexture.IsValid());
+    g_ShaderIDMap["default_new"]->SetUniformInt("material.specular", 1);
+
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, m_SpecTexture);
 
     glDrawElements(GL_TRIANGLES, m_Model.GetIndexesCount(), GL_UNSIGNED_INT, 0);
 }

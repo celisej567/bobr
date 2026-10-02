@@ -17,8 +17,8 @@ CTexture::CTexture(const char* filename, GLenum textureType)
 
 CTexture::~CTexture()
 {
-    if(::IsValid(m_TextureCache) && g_pMainWindow->get())
-        glDeleteTextures(1, &(m_TextureCache->ID));
+    //if(::IsValid(m_TextureCache) && g_pMainWindow->get())
+    //    glDeleteTextures(1, &(m_TextureCache->ID));
 }
 
 void CTexture::ProcessFile(const char* filename, GLenum textureType)
@@ -27,5 +27,5 @@ void CTexture::ProcessFile(const char* filename, GLenum textureType)
         return;
 
     m_TextureCache = &AssetCache::GetTextureData(filename);
-        
+
 }

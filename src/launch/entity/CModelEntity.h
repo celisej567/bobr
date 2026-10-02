@@ -15,6 +15,7 @@ public:
 
     void SetModelName(const std::string &filename);
     void SetTextureName(const std::string &filename, GLenum textureType);
+    void SetTextureSpecName(const std::string &filename, GLenum textureType);
     void SetScale(float fX, float fY, float fZ);
 
     virtual void Think();
@@ -34,4 +35,5 @@ private:
     glm::vec3 m_vecScale;
 
     CTexture m_Texture;
+    CTexture m_SpecTexture;
 };

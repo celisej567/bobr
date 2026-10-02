@@ -18,6 +18,12 @@ static std::unordered_map<std::string, texturecache_t> m_mapCachedTextures;
 const modelcache_t AssetCache::s_EmptyModelCache;
 const texturecache_t AssetCache::s_EmptyTextureCache;
 
+static const unsigned char errTexData[16] =
+{
+    0, 0, 0,     105, 0, 198,   0, 0,   // строка 1 (6 байт + 2 паддинга)
+    105, 0, 198, 0, 0, 0,       0, 0    // строка 2 (6 байт + 2 паддинга)
+};
+
 void AssetCache::Destroy()
 {
     for (auto it = m_mapCachedModels.begin(); it != m_mapCachedModels.end(); )
@@ -27,12 +33,11 @@ void AssetCache::Destroy()
         // just to be safe
         if(IsValid(mdlcache))
         {
-            
+
             glDeleteBuffers(1, &(mdlcache.EBO));
             glDeleteBuffers(1, &(mdlcache.VBO));
             glDeleteVertexArrays(1, &(mdlcache.VAO));
-            // do delete before this line
-             
+
             it = m_mapCachedModels.erase(it);
             continue;
         }
@@ -55,6 +60,37 @@ void AssetCache::Destroy()
         }
         ++it;
     }
+}
+
+const texturecache_t AssetCache::GenerateErrorTexture()
+{
+
+    texturecache_t texcache_new;
+    texcache_new.bInit = true;
+
+    texcache_new.textureData = static_cast<unsigned char*>(malloc(sizeof(errTexData)));
+    memcpy(texcache_new.textureData, errTexData, sizeof(errTexData));
+
+    GLuint textureTypeInternal = GL_RGB8;
+    GLuint textureType = GL_RGB;
+
+    texcache_new.textureType = textureTypeInternal;
+    texcache_new.width = 2;
+    texcache_new.height = 2;
+
+    glGenTextures(1, &texcache_new.ID);
+    glBindTexture(GL_TEXTURE_2D, texcache_new.ID);
+
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+
+    glTexImage2D(GL_TEXTURE_2D, 0, textureTypeInternal, texcache_new.width, texcache_new.height, 0, textureType, GL_UNSIGNED_BYTE, texcache_new.textureData);
+
+    return texcache_new;
 }
 
 const modelcache_t& AssetCache::GetModelData( const std::string &strModelPath )
@@ -152,7 +188,7 @@ bool AssetCache::LoadModelFromDisk(const std::string &strModelPath)
     std::string warn;
     std::string err;
 
-    if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, MODEL_PATH.c_str())) 
+    if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, MODEL_PATH.c_str()))
     {
         std::cout << err << std::endl;
         return false;
@@ -207,7 +243,7 @@ bool AssetCache::LoadModelFromDisk(const std::string &strModelPath)
             }
         }
     }
-    
+
     // mark cache as filled with valid data.
     mdlcache.bInit = true;
 
@@ -215,7 +251,7 @@ bool AssetCache::LoadModelFromDisk(const std::string &strModelPath)
 
     {
         PROFILER_SCOPE_NAME("Bind Buffers");
-    
+
         // now we need to make VBO
         // TODO(celisej): i think its better to move this somewhere else
 
@@ -246,7 +282,7 @@ bool AssetCache::LoadModelFromDisk(const std::string &strModelPath)
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         glBindVertexArray(0);
     }
-    
+
     return true;
 
 }
@@ -255,17 +291,22 @@ bool AssetCache::LoadTextureFromDisk(const std::string &strTexturePath)
 {
     PROFILER_SCOPE_NAME("LoadTextureFromDisk")
     PROFILER_SCOPE_TEXT(strTexturePath.data(), strTexturePath.length());
-    
+
     texturecache_t texcache;
-    
+
     int nrChannels;
     texcache.textureData = stbi_load(strTexturePath.c_str(), &texcache.width, &texcache.height, &nrChannels, 0);
 
     if(!texcache.textureData)
     {
         std::cout << "Failed to load texture" << strTexturePath << std::endl;
-        return false;
+
+        m_mapCachedTextures[strTexturePath] = GenerateErrorTexture();
+
+        return true;
     }
+
+    texcache.bInit = true;
 
     m_mapCachedTextures[strTexturePath] = texcache;
 
@@ -286,7 +327,7 @@ bool AssetCache::LoadTextureFromDisk(const std::string &strTexturePath)
             std::cout << "Internal Type: GL_R8\n";
 
             break;
-        
+
         case 2:
             textureTypeInternal = GL_RG8;
             textureType = GL_RG;
@@ -316,10 +357,12 @@ bool AssetCache::LoadTextureFromDisk(const std::string &strTexturePath)
             break;
     }
 
-    glGenTextures(1, &texcache_new.ID);
-    glBindTexture(GL_TEXTURE_2D, texcache_new.ID); 
+    texcache_new.textureType = textureTypeInternal;
 
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	
+    glGenTextures(1, &texcache_new.ID);
+    glBindTexture(GL_TEXTURE_2D, texcache_new.ID);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -327,6 +370,5 @@ bool AssetCache::LoadTextureFromDisk(const std::string &strTexturePath)
 
     glTexImage2D(GL_TEXTURE_2D, 0, textureTypeInternal, texcache_new.width, texcache_new.height, 0, textureType, GL_UNSIGNED_BYTE, texcache_new.textureData);
     glGenerateMipmap(GL_TEXTURE_2D);
-
     return true;
 }
