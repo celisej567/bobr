@@ -2,3 +2,4 @@ build
 _BUILD
 .cache
 .PVS-Studio
+.vscode
