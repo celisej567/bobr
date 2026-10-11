@@ -1,5 +1,6 @@
 cmake_minimum_required( VERSION 4.0 )
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 project( bobr )
 
 set(BOBR_INSTALL_DIR ${CMAKE_SOURCE_DIR}/_BUILD)
@@ -23,6 +24,7 @@ if(MSVC)
 endif()
 
 add_subdirectory( src/manyinterfaces )
+add_subdirectory( src/filesystem )
 add_subdirectory( src/launch )
 if(LINUX)
 	add_subdirectory( src/mylib )

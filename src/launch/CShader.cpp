@@ -1,6 +1,9 @@
 #include "CShader.h"
 
 #include "string"
+#include "iostream"
+#include "manyinterfaces.h"
+#include "platform.h"
 #include "vector"
 #include "filesystem"
 
@@ -30,9 +33,9 @@ unsigned int CompileShader(const char* buff, GLenum type)
 
 CShader::CShader(std::string fragmentPath, std::string vertexPath)
 {
-    std::string vertexShader = GetFileString(vertexPath);
-    std::string fragmentShader = GetFileString(fragmentPath);
-    
+    std::string vertexShader = g_pFileSystem->ReadFileText("root", vertexPath);
+    std::string fragmentShader = g_pFileSystem->ReadFileText("root", fragmentPath);
+
     if( vertexShader.empty() || fragmentShader.empty() )
         std::abort();
 
@@ -52,7 +55,7 @@ CShader::CShader(std::string fragmentPath, std::string vertexPath)
             std::cout << "ERROR::SHADERPROGRAM::LINK::FAILED\n" << infoLog << std::endl;
         }
     }
-    
+
     //delete[] vertexShader;
     //delete[] fragmentShader;
 
@@ -66,7 +69,7 @@ CShader::~CShader()
 }
 
 
-// rewrite this garbage
+// rewrite this garbage later (seems to be never)
 namespace fs = std::filesystem;
 #include <ranges>
 #include <string_view>
@@ -75,11 +78,11 @@ void CompileAllShaders()
     std::string path = "shaders";
     std::vector<std::string> shaderFiles;
 
-    if (fs::exists(path) && fs::is_directory(path)) 
+    if (fs::exists(path) && fs::is_directory(path))
     {
         for (const auto& entry : fs::directory_iterator(path))
         {
-            if (entry.is_regular_file() && entry.path().extension() == ".shader") 
+            if (entry.is_regular_file() && entry.path().extension() == ".shader")
             {
                 shaderFiles.push_back(entry.path().filename().string());
             }
@@ -90,16 +93,22 @@ void CompileAllShaders()
     for( std::string strFile : shaderFiles )
     {
         std::unordered_map<GLenum, std::string> Shaders;
-        std::string buff = GetFileString(path+"/"+strFile);
+        std::string buff = g_pFileSystem->ReadFileText("root", path+"/"+strFile);
 
-        size_t lastindex = strFile.find_last_of("."); 
+        size_t lastindex = strFile.find_last_of(".");
         std::string rawshadername = strFile.substr(0, lastindex);
 
-        std::vector<std::string> lines = MySplitString(buff);
+        std::vector<std::string> lines = SplitStd(buff, '\n');
 
         for(std::string line : lines )
         {
-            size_t lastindex1 = line.find_last_of("."); 
+            if(!line.empty() && line.back() == '\r')
+                line.pop_back();
+
+            if(line.empty())
+                continue;
+
+            size_t lastindex1 = line.find_last_of(".");
             std::string filetype = line.substr(lastindex1, line.size()-1);
 
             GLenum type = GL_VERTEX_SHADER;
@@ -117,6 +126,6 @@ void CompileAllShaders()
         }
 
         g_ShaderIDMap[rawshadername] = new CShader( path+"/"+Shaders[GL_FRAGMENT_SHADER], path+"/"+Shaders[GL_VERTEX_SHADER]);
-        
+
     }
 }

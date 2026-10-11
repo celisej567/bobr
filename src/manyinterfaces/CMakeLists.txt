@@ -22,5 +22,8 @@ endif()
 
 add_library(manyinterfaces STATIC)
 
+# linked into shared modules
+set_target_properties(manyinterfaces PROPERTIES POSITION_INDEPENDENT_CODE ON)
+
 target_sources(manyinterfaces PRIVATE ${SOURCES})
 target_include_directories(manyinterfaces BEFORE PRIVATE ${INCLUDE_DIRS})

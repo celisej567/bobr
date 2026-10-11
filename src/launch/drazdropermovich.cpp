@@ -15,14 +15,10 @@
 #include <SDL3/SDL_scancode.h>
 #include <SDL3/SDL_video.h>
 
-#define STB_IMAGE_IMPLEMENTATION
-#include "stb_image.h"
-
 //#include "fstream"
 //#include "sstream"
 
 #include "CShader.h"
-#include "FileSystemStuff.h"
 #include "CTexture.h"
 #include "CCamera.h"
 #include "CCameraController.h"
@@ -41,7 +37,6 @@
 #include "manyinterfaces.h"
 
 
-#include "filesystem/basicfilesystem.h"
 
 #include "profiler.hpp"
 
@@ -132,14 +127,25 @@ int main(int argc, char **argv)
 #elifdef PLATFORM_POSIX
     g_pInputManager = (IInputManager*)LIB_LoadModule("./libinputmanager.so");
 #endif
-    g_pFileSystem = new CBasicFileSystem();
+#ifdef PLATFORM_WINDOWS
+    g_pFileSystem = (IFileSystem*)LIB_LoadModule("./filesystem.dll");
+#elifdef PLATFORM_POSIX
+    g_pFileSystem = (IFileSystem*)LIB_LoadModule("./libfilesystem.so");
+#endif
+
+    if(!g_pFileSystem)
+    {
+        CMD::Msg("Unable to load module IFileSystem.\n");
+        return -1;
+    }
+    CMD::Msg("\n%s Loaded.\nImplemented by: %s.\n\n", g_pFileSystem->GetModuleBaseName(), g_pFileSystem->GetModuleName());
 
     if(!g_pInputManager)
         CMD::Msg("Unable to load module IInputManager.\n");
     else
         CMD::Msg("\n%s Loaded.\nImplemented by: %s.\n\n", g_pInputManager->GetModuleBaseName(), g_pInputManager->GetModuleName());
 
-    CMD::Msg("\n%s\n\n", (g_pFileSystem->ReadFile("./fs_read_test.txt")).c_str());
+    CMD::Msg("\n%s\n\n", (g_pFileSystem->ReadFileText("root", "fs_read_test.txt")).c_str());
 
     g_pMainWindow = new CSDL3Window();
 
@@ -178,8 +184,6 @@ int main(int argc, char **argv)
     SDL_GL_GetAttribute(SDL_GL_DEPTH_SIZE, &depthBits);
     SDL_GL_GetAttribute(SDL_GL_STENCIL_SIZE, &stencilBits);
     printf("Depth: %d, Stencil: %d\n", depthBits, stencilBits);
-
-    stbi_set_flip_vertically_on_load(true);
 
     CompileAllShaders();
 
@@ -346,6 +350,7 @@ int main(int argc, char **argv)
         g_pInputManager->Shutdown();
 
     AssetCache::Destroy();
+    g_pFileSystem->Shutdown();
 
     if(!SDL_GL_DestroyContext(sdl_gl))
     {

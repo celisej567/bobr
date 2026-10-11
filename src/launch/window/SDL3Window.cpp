@@ -4,7 +4,7 @@
 
 CSDL3Window::CSDL3Window()
 {
-    
+
     wnd = SDL_CreateWindow("launch", WND_WIDTH, WND_HEIGHT, SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL);
     //SDL_Renderer* ren = SDL_CreateRenderer(wnd, NULL);
 

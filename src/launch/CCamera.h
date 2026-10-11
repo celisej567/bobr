@@ -16,9 +16,10 @@ public:
     }
 
     virtual float GetFov() { return m_flFov; }
-    virtual void SetFov(float flFov) { 
+    virtual void SetFov(float flFov)
+    {
         m_flFov = flFov;
-        
+
         if(m_flFov > 179)
 			m_flFov = 179;
 
@@ -35,7 +36,6 @@ public:
         m_Angles = angles;
 
         UpdateVectors();
-
     }
 
     virtual glm::vec3 GetForward() const { return m_Forward; }

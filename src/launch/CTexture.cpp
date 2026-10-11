@@ -1,7 +1,5 @@
 #include "iostream"
 #include "CTexture.h"
-#include "stb_image.h"
-#include "FileSystemStuff.h"
 #include "glad/glad.h"
 //#include "GL/gl.h"
 

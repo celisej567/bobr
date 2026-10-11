@@ -11,7 +11,6 @@ struct texturecache_t
     GLenum textureType = 0;
 
     bool bInit = false;
-    unsigned char *textureData = 0;
 };
 
 
@@ -25,9 +24,6 @@ inline bool IsValid(const texturecache_t& x)
 
     if( x.width == 0 || x.height == 0 || x.textureType == 0)
         return false; 
-
-    if (x.textureData == 0)        
-        return false;
 
     return true; 
 }
@@ -46,8 +42,5 @@ inline bool IsValid(const texturecache_t* x)
     if( x->width == 0 || x->height == 0 || x->textureType == 0)
         return false; 
 
-    if (x->textureData == 0)        
-        return false;
-    
     return true; 
 }
