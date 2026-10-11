@@ -25,6 +25,7 @@ public:
     virtual void ClearBasePaths() override;
 
     virtual bool FileExists(const std::string &strBasePath, const std::string &strPath) override;
+    virtual std::vector<std::string> FindFiles(const std::string &strBasePath, const std::string &strDirectory, const std::string &strExtension = "") override;
     virtual FileHandle_t OpenFileRead(const std::string &strBasePath, const std::string &strPath, FileMode_t mode = FS_NORMAL) override;
     virtual FileHandle_t OpenFileWrite(const std::string &strBasePath, const std::string &strPath, FileMode_t mode = FS_NORMAL) override;
     virtual size_t ReadBytes(FileHandle_t hFile, void* pBuffer, size_t iSize) override;

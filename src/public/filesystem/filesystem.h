@@ -48,6 +48,13 @@ public:
 
     virtual bool FileExists(const std::string &strBasePath, const std::string &strPath) = 0;
 
+    // Lists files directly inside of strDirectory (not recursive) through the whole chain.
+    // strExtension is compared case insensitive, with the dot. Empty means any file.
+    // Returns paths relative to the base path, like "shaders/color.shader".
+    // The same path found in several folders is returned once.
+    // TODO: supposr for glob or regex.
+    virtual std::vector<std::string> FindFiles(const std::string &strBasePath, const std::string &strDirectory, const std::string &strExtension = "") = 0;
+
     virtual std::string ReadFileText(const std::string &strBasePath, const std::string &strPath) = 0;
     virtual std::vector<uint8> ReadFileBinary(const std::string &strBasePath, const std::string &strPath) = 0;
     virtual bool WriteFileText(const std::string &strBasePath, const std::string &strPath, const std::string &strContent, FileMode_t mode = FS_NORMAL) = 0;

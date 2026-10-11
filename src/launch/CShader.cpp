@@ -70,30 +70,21 @@ CShader::~CShader()
 
 
 // rewrite this garbage later (seems to be never)
-namespace fs = std::filesystem;
 #include <ranges>
 #include <string_view>
 void CompileAllShaders()
 {
     std::string path = "shaders";
-    std::vector<std::string> shaderFiles;
-
-    if (fs::exists(path) && fs::is_directory(path))
-    {
-        for (const auto& entry : fs::directory_iterator(path))
-        {
-            if (entry.is_regular_file() && entry.path().extension() == ".shader")
-            {
-                shaderFiles.push_back(entry.path().filename().string());
-            }
-        }
-    }
+    std::vector<std::string> shaderFiles = g_pFileSystem->FindFiles("root", path, ".shader");
 
     /// do some actual parsing here later
-    for( std::string strFile : shaderFiles )
+    for( const std::string &strShaderPath : shaderFiles )
     {
         std::unordered_map<GLenum, std::string> Shaders;
-        std::string buff = g_pFileSystem->ReadFileText("root", path+"/"+strFile);
+        std::string buff = g_pFileSystem->ReadFileText("root", strShaderPath);
+
+        // strShaderPath is "shaders/name.shader"
+        std::string strFile = strShaderPath.substr(strShaderPath.find_last_of('/') + 1);
 
         size_t lastindex = strFile.find_last_of(".");
         std::string rawshadername = strFile.substr(0, lastindex);

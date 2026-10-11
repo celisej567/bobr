@@ -4,6 +4,7 @@
 #include "loaders/objloader.h"
 
 #include <cstdio>
+#include <unordered_set>
 #include <cerrno>
 #include <cstring>
 
@@ -87,6 +88,7 @@ std::string CBasicFileSystem::NormalizeBaseName(const std::string &strBasePath)
     return ToLowerRet(strBasePath);
 }
 
+// Honestly im not sure how safe it is to return * of that.
 const std::vector<std::string>* CBasicFileSystem::FindBasePath(const std::string &strBasePath) const
 {
     auto it = m_mapBasePaths.find(NormalizeBaseName(strBasePath));
@@ -282,6 +284,57 @@ bool CBasicFileSystem::FileExists(const std::string &strBasePath, const std::str
     fs::path full;
     std::string strKey;
     return FindFile(strBasePath, strPath, full, strKey);
+}
+
+std::vector<std::string> CBasicFileSystem::FindFiles(const std::string &strBasePath, const std::string &strDirectory, const std::string &strExtension)
+{
+    std::vector<std::string> vecFound;
+
+    // Trailing slash would be treated as a missing name.
+    std::string strDir = strDirectory;
+    while(!strDir.empty() && (strDir.back() == '/' || strDir.back() == '\\'))
+        strDir.pop_back();
+
+    std::string strRel;
+    if(!NormalizeRelativePath(strDir, strRel))
+        return vecFound;
+
+    const std::vector<std::string>* pFolders = FindBasePath(strBasePath);
+    if(!pFolders)
+        return vecFound;
+
+    const std::string strExtLower = ToLowerRet(strExtension);
+    std::unordered_set<std::string> setSeen;
+    std::error_code ec;
+
+    for(const std::string &strFolder : *pFolders)
+    {
+        fs::path dir = m_ExeDir / strFolder / strRel;
+        FS_VERBOSE("FS: Listing \"%s\".\n", dir.string().c_str());
+
+#ifdef PLATFORM_POSIX
+        // case sensitive file systems.
+        if(!fs::is_directory(dir, ec))
+            dir = m_ExeDir / strFolder / ToLowerRet(strRel);
+#endif
+
+        for(fs::directory_iterator it(dir, ec), end; !ec && it != end; it.increment(ec))
+        {
+            if(!it->is_regular_file(ec))
+                continue;
+
+            if(!strExtLower.empty() && ToLowerRet(it->path().extension().string()) != strExtLower)
+                continue;
+
+            std::string strFile = strRel + "/" + it->path().filename().string();
+
+            if(setSeen.insert(ToLowerRet(strFile)).second)
+                vecFound.push_back(strFile);
+        }
+        ec.clear();
+    }
+
+    return vecFound;
 }
 
 FileHandle_t CBasicFileSystem::OpenFileRead(const std::string &strBasePath, const std::string &strPath, FileMode_t mode)
