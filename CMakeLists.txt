@@ -24,6 +24,7 @@ if(MSVC)
 endif()
 
 add_subdirectory( src/manyinterfaces )
+add_subdirectory( src/kv )
 add_subdirectory( src/filesystem )
 add_subdirectory( src/launch )
 if(LINUX)

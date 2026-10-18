@@ -5,6 +5,7 @@
 #include "glad/glad.h"
 // #include "GL/gl.h"
 
+#include "kv/keyvalue.h"
 #include "shared.h"
 
 #include "vector"
@@ -35,7 +36,6 @@
 
 #include "libs.h"
 #include "manyinterfaces.h"
-
 
 
 #include "profiler.hpp"
@@ -120,6 +120,44 @@ int main(int argc, char **argv)
     else
         std::cout << "DID NOT Found -double" << std::endl;
     }*/
+
+    CKeyValue kvtest("Test");
+    kvtest.UsesEscapeSequences(true);
+    if( kvtest.LoadFromFile("./kvtest/test.kv") )
+    {
+
+        CKeyValue* kv_child_test = kvtest.GetKeyValue("var_child_kv");
+        if(kv_child_test)
+        {
+            CMD::Msg("var_child_kv: var_bool: %d\n",kv_child_test->GetBool("var_bool"));
+            CMD::Msg("var_child_kv: var_int: %d\n",kv_child_test->GetInt("var_int"));
+            CMD::Msg("var_child_kv: var_float: %f\n",kv_child_test->GetFloat("var_float"));
+            CMD::Msg("var_child_kv: var_string: %s\n",kv_child_test->GetString("var_string").c_str());
+        }
+
+        CMD::Msg("var_bool: %d\n", kvtest.GetInt("var_bool"));
+        CMD::Msg("var_int: %d\n", kvtest.GetInt("var_int"));
+        CMD::Msg("var_float: %f\n", kvtest.GetFloat("var_float"));
+        CMD::Msg("var_string: %s\n", kvtest.GetString("var_string").c_str());
+    }
+    else
+    {
+
+        CMD::Msg("Making new one...\n");
+
+        CKeyValue kv_child_test;
+        kv_child_test.SetInt("var_bool",1);
+        kv_child_test.SetInt("var_int",42);
+        kv_child_test.SetFloat("var_float",3.14);
+        kv_child_test.SetString("var_string","Hi im \"Henry\".\nHow are you?");
+
+        kvtest.SetInt("var_bool",1);
+        kvtest.SetInt("var_int",42);
+        kvtest.SetFloat("var_float",3.14);
+        kvtest.SetString("var_string","I am a string");
+        kvtest.SetKeyValue("var_child_kv", &kv_child_test);
+        kvtest.WriteToFile("./kvtest/test.kv");
+    }
 
     //TODO: make paths platform-independed
 #ifdef PLATFORM_WINDOWS
