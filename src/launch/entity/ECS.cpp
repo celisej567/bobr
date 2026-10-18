@@ -38,7 +38,7 @@ void ProcessEntitiesFrame()
 
         if( !(pEntity->IsVisible()) )
             continue;
-        
+
 
         if(pEntity->IsEnabled())
         {
